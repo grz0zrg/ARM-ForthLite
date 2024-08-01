@@ -1,6 +1,6 @@
 # ARM-ForthLite
 
-Minimal, lightweight core [Forth](https://en.wikipedia.org/wiki/Forth_(programming_language) implementation for ARM processors. (without [REPL](https://en.wikipedia.org/wiki/Read%E2%80%93eval%E2%80%93print_loop))
+Minimal, lightweight core [Forth](https://en.wikipedia.org/wiki/Forth_(programming_language)) implementation for ARM processors. (without [REPL](https://en.wikipedia.org/wiki/Read%E2%80%93eval%E2%80%93print_loop))
 
 * example binary is **488 bytes** of which *76 bytes* is for setup, *412 bytes* is Forth core implementation
 * use [Subroutine Threaded Code](https://www.bradrodriguez.com/papers/moving1.htm)
