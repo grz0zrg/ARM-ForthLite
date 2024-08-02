@@ -12,7 +12,7 @@ Minimal, lightweight core [Forth](https://en.wikipedia.org/wiki/Forth_(programmi
 
 Example is bare metal and independent so there is no REPL, idea is to wrap own REPL around it and own set of primitives as needed.
 
-Example can be tested online on [https://cpulator.01xz.net/?sys=arm](CPUlator).
+Example can be tested online on [CPUlator](https://cpulator.01xz.net/?sys=arm).
 
 Primitives are defined into a separate file so a different set can be swapped easily, included ones are `+` `:` `;` and `immediate`.
 
