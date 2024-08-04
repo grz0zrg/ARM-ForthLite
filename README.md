@@ -2,11 +2,11 @@
 
 Minimal, lightweight core [Forth](https://en.wikipedia.org/wiki/Forth_(programming_language)) implementation for ARM processors. (without [REPL](https://en.wikipedia.org/wiki/Read%E2%80%93eval%E2%80%93print_loop))
 
-* example binary is **488 bytes** of which *76 bytes* is for setup, *412 bytes* is Forth core implementation
+* example binary is **452 bytes** of which *72 bytes* is for setup, *380 bytes* is Forth core implementation
 * use [Subroutine Threaded Code](https://www.bradrodriguez.com/papers/moving1.htm)
-* parse number
+* parse hex number
 * stack top is stored into a register (r4) and implementation use all available registers for additional speed
-* [Thumb-2](https://en.wikipedia.org/wiki/ARM_architecture_family#Thumb-2) can be used with small adaptations (add IT and PC changes), result is *~410* bytes example binary
+* [Thumb-2](https://en.wikipedia.org/wiki/ARM_architecture_family#Thumb-2) can be used with small adaptations (add IT and PC changes), result is *~400* bytes example binary
 * not really written for bootstrapping support due to tricks but can still go with the [sectorforth](https://github.com/cesarblum/sectorforth) or [milliForth](https://github.com/fuzzballcat/milliForth) route
 * target is a RPI Zero 1.3 (ARM1176JZF-S), probably works on any ARM, side goal was [ARMv2](https://en.wikichip.org/wiki/arm/armv2) support but didn't test it yet (compile related generated opcodes may require adaptation !)
 
@@ -26,8 +26,9 @@ This implementation makes shortcuts to reduce code size that i consider ok becau
 
 * it doesn't trim extra whitespaces; should always be exactly one whitespace between words
 * no negative numbers parsing (can be built easily)
+* no errors handling such as stack underflow: check first commit for a version with unknown word error and stricter base 10 number parsing
+* no unknown words, they are parsed as number (base 16) to save some instructions
 * must store return address at `forth_retn_addr` when `forth` is jumped to
-* error code is returned in r5, right now it is just 0 for 'ok' and 1 for an unknown word; no errors for stack underflow
 
 Code can be reduced further by inlining subroutines such as `read_word` `forth` etc. at the risk of being unreadable, "ret" could be put automatically also but require a "primitive" flag, may save some bytes with many primitives.
 
@@ -55,7 +56,7 @@ Usage of these registers is kept as-is for the whole Forth context :
 
 May be used in new words to implement some bootstrap primitives or be saved / loaded from somewhere to switch Forth context.
 
-Immediate word can use r7 safely to save space, always 0 in this case. (this is what ';' actually do)
+r7 in word definition can be used safely to save space, always 0 in this case. (this is what ';' do)
 
 ## Build
 

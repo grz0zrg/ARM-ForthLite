@@ -26,7 +26,7 @@ _start:
     str pc, [r9]
     b forth
 
-    @ r4 has value "5" at this point
+    @ r4 has value 1e at this point
     0:
         b 0b
 
@@ -38,7 +38,7 @@ _start:
         .word (_end + FORTH_DICT_SIZE + FORTH_DATA_STACK_SIZE + FORTH_RETN_STACK_SIZE)
     @ code to evaluate :
     forth_code:
-        .asciz ": five 1 4 + ; five"
+        .asciz ": 1e f f + ; 1e"
         .align 2
 
     @ = FORTH DICTIONARY
