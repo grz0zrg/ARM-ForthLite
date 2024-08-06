@@ -7,10 +7,10 @@ Minimal, lightweight core [Forth](https://en.wikipedia.org/wiki/Forth_(programmi
 * parse hex number
 * stack top is stored into a register (r4) and implementation use all available registers for additional speed
 * [Thumb-2](https://en.wikipedia.org/wiki/ARM_architecture_family#Thumb-2) can be used with small adaptations (add IT and PC changes), result is *~400* bytes example binary
-* not really written for bootstrapping support due to tricks but can still go with the [sectorforth](https://github.com/cesarblum/sectorforth) or [milliForth](https://github.com/fuzzballcat/milliForth) route
-* target is a RPI Zero 1.3 (ARM1176JZF-S), probably works on any ARM, side goal was [ARMv2](https://en.wikichip.org/wiki/arm/armv2) support but didn't test it yet (compile related generated opcodes may require adaptation !)
+* not really written for bootstrapping support due to tricks but can still go with the [sectorforth](https://github.com/cesarblum/sectorforth) or [milliForth](https://github.com/fuzzballcat/milliForth) route (see experiment / misc)
+* target is a RPI Zero 1.3 (ARM1176JZF-S), probably works on any ARM that support conditional instructions, side goal was [ARMv2](https://en.wikichip.org/wiki/arm/armv2) support but didn't test it yet (compile related generated opcodes may require adaptation !)
 
-Example is bare metal and independent so there is no REPL, idea is to wrap own REPL around it and own set of primitives as needed.
+Example is bare metal and independent so there is no REPL, idea is to wrap own REPL around it and own set of primitives as needed. (or do the REPL in Forth !)
 
 Example can be tested online on [CPUlator](https://cpulator.01xz.net/?sys=arm).
 
@@ -27,12 +27,12 @@ This implementation makes shortcuts to reduce code size that i consider ok becau
 * it doesn't trim extra whitespaces; should always be exactly one whitespace between words
 * no negative numbers parsing (can be built easily)
 * no errors handling such as stack underflow: check first commit for a version with unknown word error and stricter base 10 number parsing
-* no unknown words, they are parsed as number (base 16) to save some instructions
+* no unknown words, they are parsed as number (base 16) since it is more convenient and to save some instructions
 * must store return address at `forth_retn_addr` when `forth` is jumped to
 
-Code can be reduced further by inlining subroutines such as `read_word` `forth` etc. at the risk of being unreadable, "ret" could be put automatically also but require a "primitive" flag, may save some bytes with many primitives.
+Code can be reduced further by inlining subroutines at the risk of being unreadable, "ret" could be put automatically also but require a "primitive" flag, may save some bytes with many primitives.
 
-Can also be reduced greatly by abandoning number parsing since it can be implemented with primitives, this is what sectorforth or milliForth do, would result in a *~400b* example, perhaps enough to fit into a bootsector with a REPL and essential primitives in Thumb-2 mode.
+Can also be reduced greatly by abandoning number parsing since it can be implemented with primitives, this is what sectorforth or milliForth do, would result in a *~400b* example.
 
 ## Speed
 
@@ -57,6 +57,14 @@ Usage of these registers is kept as-is for the whole Forth context :
 May be used in new words to implement some bootstrap primitives or be saved / loaded from somewhere to switch Forth context.
 
 r7 in word definition can be used safely to save space, always 0 in this case. (this is what ';' do)
+
+## sectorforth experiment
+
+[sectorforth](https://github.com/cesarblum/sectorforth/tree/master) is a cool 16-bit x86 Forth that fits in a 512-byte boot sector
+
+Although this project differ slightly in goal i tried to implement the sectorforth dictionary as a testbed experiment (see `misc` directory) with a result of about ~648b of code in normal ARM mode without parsing numbers nor REPL.
+
+The main "limitation" compared to sectorforth is that the vars are all in registers here instead of in memory which ease some stuff but this require more words to modify them and sectorforth examples needs to be adapted in consequence, i converted about 50% of the sectorforth example until i reached the vars issue, may still be doable to reach 512b with a REPL with slightly different structure (or just perhaps pushing all vars on stack) or in Thumb-2 mode with size optimizations outlined above if 512b is a goal.
 
 ## Build
 

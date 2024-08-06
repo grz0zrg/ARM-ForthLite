@@ -15,7 +15,7 @@
 @ the macro call and should end
 @ with a "ret" macro call
 .macro forth_word string, flag=FORTH_WORD_FLAG_DEFAULT
-    .if forth_word_counter != 0  @ computed prev. word address
+    .if forth_word_counter != 0 @ computed prev. word address
         .if forth_word_counter % 2 == 0
             888:
             .word 666b
@@ -39,6 +39,18 @@
 @ to manipulate the return stack
 .macro rpush r
     stmdb r0!, { \r }
+.endm
+
+.macro rpop r
+    ldmia r0!, { \r }
+.endm
+
+.macro rpushf r f
+    str\f \r, [r0, #-4]!
+.endm
+
+.macro rpopf r f
+    ldr\f \r, [r0], #4
 .endm
 
 .macro ret
