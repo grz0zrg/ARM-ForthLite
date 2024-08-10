@@ -2,7 +2,7 @@
 
 Minimal, lightweight core [Forth](https://en.wikipedia.org/wiki/Forth_(programming_language)) implementation for ARM processors. (without [REPL](https://en.wikipedia.org/wiki/Read%E2%80%93eval%E2%80%93print_loop))
 
-* example binary is **452 bytes** of which *72 bytes* is for setup, *380 bytes* is Forth core implementation
+* example binary is **440 bytes** of which *72 bytes* is for setup, *368 bytes* is Forth core implementation
 * use [Subroutine Threaded Code](https://www.bradrodriguez.com/papers/moving1.htm)
 * parse hex number
 * stack top is stored into a register (r4) and implementation use all available registers for additional speed
@@ -12,7 +12,7 @@ Minimal, lightweight core [Forth](https://en.wikipedia.org/wiki/Forth_(programmi
 
 Example is bare metal and independent so there is no REPL, idea is to wrap own REPL around it and own set of primitives as needed. (or do the REPL in Forth !)
 
-Example can be tested online on [CPUlator](https://cpulator.01xz.net/?sys=arm).
+Example can be tested online on [CPUlator](https://cpulator.01xz.net/?sys=arm)
 
 Primitives are defined into a separate file so a different set can be swapped easily, included ones are `+` `:` `;` and `immediate`.
 
@@ -32,7 +32,9 @@ This implementation makes shortcuts to reduce code size that i consider ok becau
 
 Code can be reduced further by inlining subroutines at the risk of being unreadable, "ret" could be put automatically also but require a "primitive" flag, may save some bytes with many primitives.
 
-Can also be reduced greatly by abandoning number parsing since it can be implemented with primitives, this is what sectorforth or milliForth do, would result in a *~400b* example.
+Can also be reduced greatly by abandoning number parsing since it can be implemented with primitives, this is what sectorforth or milliForth do, would result in a *< 400b* example.
+
+Another option is to abandon the mode (compile / immediate) and just generate code somewhere in RAM then jump to it at the end, it is like being always in compile mode, this has the advantage of freeing many registers so they can be used to hold temporary values likes in Machine Forth which avoid stack noise, it is also much faster and tinier, the code here is easily adaptable to do this.
 
 ## Speed
 

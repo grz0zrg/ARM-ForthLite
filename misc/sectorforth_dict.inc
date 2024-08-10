@@ -23,7 +23,7 @@ forth_word ":" FORTH_WORD_FLAG_IMMEDIATE
     strb r7, [r2, #5]           @ store word length
     mov r3, #FORTH_COM_MODE     @ switch to compile mode
     strb r3, [r2, #4]           @ store FORTH_WORD_FLAG_DEFAULT flag (note: use r3 since COM_MODE is same constant)
-    add r14, #4
+    add r14, #3
     bic r14, #3                 @ align to get to end of dict. addr.
     ret_opcode:
     ret
