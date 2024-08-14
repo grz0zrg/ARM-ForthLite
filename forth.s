@@ -79,7 +79,7 @@ parse_number:
 @         r0, r5, r6, r8, r9, r10
 @ ===============================
 eval_word:
-    add r10, #3                 @ adjust word name end addr for alignment
+    add r10, #4                 @ adjust word name end addr for alignment
     cmp r3, #FORTH_IMM_MODE     @ immediate mode ?
     ldrb r8, [r12, #4]          @ get word flag
     andnes r9, r8, #0xff        @ in compile mode : is an immediate word ?

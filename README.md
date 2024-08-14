@@ -30,7 +30,7 @@ This implementation makes shortcuts to reduce code size that i consider ok becau
 * no unknown words, they are parsed as number (base 16) since it is more convenient and to save some instructions
 * must store return address at `forth_retn_addr` when `forth` is jumped to
 
-Code can be reduced further by inlining subroutines at the risk of being unreadable, "ret" could be put automatically also but require a "primitive" flag, may save some bytes with many primitives.
+Code can be reduced further by not putting TOS in a register or inlining subroutines at the risk of being unreadable, "ret" could be put automatically also but require a "primitive" flag, may save some bytes with many primitives.
 
 Can also be reduced greatly by abandoning number parsing since it can be implemented with primitives, this is what sectorforth or milliForth do, would result in a *< 400b* example.
 
