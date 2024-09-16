@@ -10,6 +10,8 @@ Minimal, lightweight core [Forth](https://en.wikipedia.org/wiki/Forth_(programmi
 * not really written for bootstrapping support due to tricks but can still go with the [sectorforth](https://github.com/cesarblum/sectorforth) or [milliForth](https://github.com/fuzzballcat/milliForth) route (see experiment / misc)
 * target is a RPI Zero 1.3 (ARM1176JZF-S), probably works on any 32 bits ARM that support conditional instructions, side goal was [ARMv2](https://en.wikichip.org/wiki/arm/armv2) support but didn't test it yet (compile related generated opcodes may require adaptation !)
 
+Not cache friendly, the cache isn't invalidated on code generation so independent instruction / data cache should be disabled for maximum reliability.
+
 Example is bare metal and independent so there is no REPL, idea is to wrap own REPL around it and own set of primitives as needed. (or do the REPL in Forth !)
 
 Example can be tested online on [CPUlator](https://cpulator.01xz.net/?sys=arm)
