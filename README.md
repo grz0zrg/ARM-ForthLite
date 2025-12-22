@@ -24,7 +24,7 @@ See [write-up](https://www.onirom.fr/wiki/blog/30-11-2024_writing_a_small_forth_
 
 And the [write-up of the Gforth assembler](https://www.onirom.fr/wiki/blog/20-12-2025_writing_an_armv2_assembler_in_forth/).
 
-Also see my derivated compile only and performances focused [heretic Forth](github.com/grz0zrg/GnosTh).
+Also see my derivated compile only and performances focused [heretic Forth](https://github.com/grz0zrg/GnosTh).
 
 ## Shortcuts
 
@@ -85,7 +85,7 @@ See `Makefile`, it use Raspberry PI toolchain by default :
 
 It will assemble the simplest example by default. (may be changed in the Makefile)
 
-The Makefile do a sed pass to the Forth file so it can take regular Forth sources, this pass remove comments + ensure one space between words + pack code as a single line and wrap it into a .asciz string directive, it output a .inc file that is included by *example.s*
+The Makefile do a sed pass on the input Forth file so it can take regular Forth sources as input, this pass remove comments + ensure one space between words + pack code as a single line and wrap it into a .asciz string directive, it output a .inc file that is included by *example.s*
 
 ## License
 
