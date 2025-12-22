@@ -52,7 +52,7 @@ find_word:
 @ ===============================
 parse_number:
     0:
-        ldrb r7, [r9], #1       @ get char.
+        ldrb r7, [r9, #1]!      @ get char. first char. is skipped (optional but safer; all numbers should be prefixed to avoid collisions with regular words)
         subs r10, r7, #87       @ get char. numeric value (a-f)
         sublts r10, r7, #'0'    @ get char. numeric value (0-9)
         addge r12,r10,r12,LSL #4@ n * 16 + v
@@ -63,9 +63,9 @@ parse_number:
         moveq r4, r12           @ immediate mode: push new value to Forth stack
         beq read_word
     1:                          @ else: compile mode
-        adr r10, 2f
+        adr r10, lit_code
         b compile
-    2:                          @ generated code (compile mode)
+    lit_code:                   @ generated code (compile mode)
         .word 0xe52d4004        @ opcode: push { r4 }
         .word 0xe59f4000        @ opcode: ldr r4, [pc, #0]
         .word 0xe28ff000        @ opcode: add pc, #0 @ value is stored after this instruction, it is stored by "compile" from r12
@@ -137,7 +137,4 @@ forth:
         subs r5, r1, r9         @ get word length; update condition flags
         subgts r5, #1           @ adjust if not empty
         bne find_word           @ find word if len > 0
-    ldr pc, [pc, #-4]           @ jump to return addr.
-
-forth_retn_addr:
-    .word 0
+    ldmia r0!, { pc }           @ "ret"

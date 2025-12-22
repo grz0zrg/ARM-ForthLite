@@ -14,32 +14,33 @@ _start:
     adr r8, forth_retn_stack_addr
     ldr r0, [r8]
     @ input code
-    adr r1, forth_code
+    ldr r1, =forth_code
     @ dict last word
-    adr r2, forth_last_word_addr
+    ldr r2, =forth_last_word_addr
+    @ dict end
+    ldr lr, =forth_dict_end_addr
     @ compile flag
     mov r3, #FORTH_IMM_MODE
-    @ dict end
-    adr lr, forth_dict_end_addr
-    @ save return addr.
-    adr r9, forth_retn_addr
-    str pc, [r9]
+    @ save return addr. on return stack
+    stmdb r0!, { pc }
     b forth
 
-    @ r4 has value 1e at this point
     0:
         b 0b
-
-    .include "forth.s"
 
     forth_data_stack_addr:
         .word (_end + FORTH_DICT_SIZE + FORTH_DATA_STACK_SIZE)
     forth_retn_stack_addr:
         .word (_end + FORTH_DICT_SIZE + FORTH_DATA_STACK_SIZE + FORTH_RETN_STACK_SIZE)
+    .pool
+
     @ code to evaluate :
     forth_code:
-        .asciz ": 1e f f + ; 1e"
+        .include "program.fs.inc"
         .align 2
+
+    @ = FORTH
+    .include "forth.s"
 
     @ = FORTH DICTIONARY
     .include "dict.inc"

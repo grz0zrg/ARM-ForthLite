@@ -2,9 +2,9 @@
 
 Minimal, lightweight core [Forth](https://en.wikipedia.org/wiki/Forth_(programming_language)) implementation for ARM processors. (without [REPL](https://en.wikipedia.org/wiki/Read%E2%80%93eval%E2%80%93print_loop))
 
-* example binary is **440 bytes** of which *72 bytes* is for setup, *368 bytes* is Forth core implementation
+* simplest example binary is **440 bytes** with minimal dictionary (immediate : ; +) of which *72 bytes* is for setup (when *adr* is used instead of pool), *368 bytes* is Forth core implementation
 * use [Subroutine Threaded Code](https://www.bradrodriguez.com/papers/moving1.htm)
-* parse hex number
+* parse hex number (must be prefixed by any symbols)
 * stack top is stored into a register (r4) and implementation use all available registers for additional speed
 * [Thumb-2](https://en.wikipedia.org/wiki/ARM_architecture_family#Thumb-2) can be used with small adaptations (add IT and PC changes), result is *~400* bytes example binary
 * not really written for bootstrapping support due to tricks but can still go with the [sectorforth](https://github.com/cesarblum/sectorforth) or [milliForth](https://github.com/fuzzballcat/milliForth) route (see experiment / misc)
@@ -16,11 +16,15 @@ Example is bare metal and independent so there is no REPL, idea is to wrap own R
 
 Example can be tested online on [CPUlator](https://cpulator.01xz.net/?sys=arm)
 
-Primitives are defined into a separate file so a different set can be swapped easily, included ones are `+` `:` `;` and `immediate`.
+Primitives are defined into a separate file so a different set can be swapped easily, included ones are enough to run the Gforth ARMv2 assembler in the *examples* directory.
 
 Note that example text section start at 0x8000; see linker file.
 
-Not standard compliant.
+See [write-up](https://www.onirom.fr/wiki/blog/30-11-2024_writing_a_small_forth_based_rpi_os_part_2_arm_forth_dialect_implementation/).
+
+And the [write-up of the Gforth assembler](https://www.onirom.fr/wiki/blog/20-12-2025_writing_an_armv2_assembler_in_forth/).
+
+Also see my derivated compile only and performances focused [heretic Forth](github.com/grz0zrg/GnosTh).
 
 ## Shortcuts
 
@@ -30,7 +34,6 @@ This implementation makes shortcuts to reduce code size that i consider ok becau
 * no negative numbers parsing (can be built easily)
 * no errors handling such as stack underflow: check first commit for a version with unknown word error and stricter base 10 number parsing
 * no unknown words, they are parsed as number (base 16) since it is more convenient and to save some instructions
-* must store return address at `forth_retn_addr` when `forth` is jumped to
 
 Code can be reduced further by not putting TOS in a register or inlining subroutines at the risk of being unreadable, "ret" could be put automatically also but require a "primitive" flag, may save some bytes with many primitives.
 
@@ -79,6 +82,10 @@ Assemble with [GNU Assembler](https://en.wikipedia.org/wiki/GNU_Assembler) and a
 See `Makefile`, it use Raspberry PI toolchain by default :
 
 * https://github.com/raspberrypi/tools
+
+It will assemble the simplest example by default. (may be changed in the Makefile)
+
+The Makefile do a sed pass to the Forth file so it can take regular Forth sources, this pass remove comments + ensure one space between words + pack code as a single line and wrap it into a .asciz string directive, it output a .inc file that is included by *example.s*
 
 ## License
 
