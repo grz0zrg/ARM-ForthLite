@@ -207,6 +207,12 @@ forth_word "rshift"
     asr r4, r5, r4
     ret
 
+forth_word "rol"
+    pop { r5 }
+    rsb r6, r4, #32
+    ror r4, r5, r6
+    ret
+
 @ ==================== ARITHMETIC
 forth_word "negate"
     mvn r4, r4

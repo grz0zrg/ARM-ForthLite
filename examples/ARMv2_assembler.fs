@@ -4,23 +4,19 @@
 \ --------------------------------- UTILS
 : variable
     create $4 allot ;
-( x -- )
 : l,
     here l! $4 allot ;
-( a b -- a&b )
 : fand
     invert swap invert or invert ;
-\ shorter but not Gforth compatible, require "nand":
+\ shorter but not Gforth compatible:
 \    nand invert ;
-( x n -- x' )
 : ROL32
     $1f fand swap $ffffffff fand swap
     over over lshift $ffffffff fand
     rot rot negate $1f fand rshift or $ffffffff fand ;
-( n -- imm12 )
 : ARM2_ENCODE_IMMEDIATE
     $10 $0 do
-        dup i $2 * ROL32
+        dup i $2 * ROL32 \ 'rol' is shorter but not Gforth compatible
         dup $ffffff00 fand 0= if
             i $8 lshift or
             swap drop
@@ -38,10 +34,10 @@
 : ARM2_ENCODE_RN $10 lshift ;
 : ARM2_ENCODE_RM_IMM
     ARM2_IMMEDIATE over fand if
-        rot ARM2_ENCODE_IMMEDIATE or
+        rot ARM2_ENCODE_IMMEDIATE
     else
-        or rot $7 lshift or
-    then ;
+        or rot $7 lshift
+    then or ;
 : ARM2_DPI
     ARM2_ENCODE_RD swap
     ARM2_ENCODE_RM_IMM or ;
@@ -61,11 +57,10 @@
     then ;
 : ARM2_OFF?_RM?
     ARM2_IMMEDIATE over fand if
-        drop $fdffffff fand swap
-        ARM2_?UD or
+        drop $fdffffff fand swap ARM2_?UD
     else
-        ARM2_?UD or or swap $7 lshift or
-    then ;
+        ARM2_?UD or or swap $7 lshift
+    then or ;
 : ARM2_SDT
     ARM2_ENCODE_RD swap ARM2_ENCODE_RN or
     $7000000 or swap
@@ -182,7 +177,6 @@
 : lr $e ; immediate
 : pc $f ; immediate
 \ -------------------------------- BRANCH
-\ ------------------- PC + 8 + 4 * offset
 : beq ARM2_ENCODE_BO ARM2_EQ ARM2_B l, ; immediate
 : bne ARM2_ENCODE_BO ARM2_NE ARM2_B l, ; immediate
 : bcs ARM2_ENCODE_BO ARM2_CS ARM2_B l, ; immediate
@@ -199,7 +193,6 @@
 : ble ARM2_ENCODE_BO ARM2_LE ARM2_B l, ; immediate
 : b ARM2_ENCODE_BO ARM2_AL ARM2_B l, ; immediate
 \ --------------------------- BRANCH LINK
-\ ------------------- PC + 8 + 4 * offset
 : bleq ARM2_ENCODE_BO ARM2_EQ ARM2_BL l, ; immediate
 : blne ARM2_ENCODE_BO ARM2_NE ARM2_BL l, ; immediate
 : blcs ARM2_ENCODE_BO ARM2_CS ARM2_BL l, ; immediate

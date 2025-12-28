@@ -10,7 +10,7 @@
 .equ FORTH_IMM_MODE, 0
 .equ FORTH_COM_MODE, 1
 
-@ =================== FIND A WORD
+@ =================== FIND A WORD ; start from dict. last word then up until the first one
 @        last dict. word addr: r2
 @                 word length: r5
 @             word start addr: r9
@@ -26,10 +26,10 @@ find_word:
         ldrb r7, [r12, #5]      @ get dict. word len.
         cmp r5, r7              @ word length match ?
         bne 2f                  @ skip word if not
-        add r10, r12, #6        @ get dict word addr.
-        mov r11, r9             @ get word addr.
+        add r10, r12, #6        @ get dict. word addr.
+        mov r11, r9             @ get input word addr.
         1:
-            ldrb r6, [r11], #1  @ word char.
+            ldrb r6, [r11], #1  @ input word char.
             ldrb r8, [r10], #1  @ dict. word char.
             cmp r6, r8
             bne 2f              @ skip word on != char.
@@ -52,7 +52,7 @@ find_word:
 @ ===============================
 parse_number:
     0:
-        ldrb r7, [r9, #1]!      @ get char. first char. is skipped (optional but safer; all numbers should be prefixed to avoid collisions with regular words)
+        ldrb r7, [r9, #1]!      @ get char. (first char. is skipped, it is optional but safer; all numbers should be prefixed to avoid collisions with regular words)
         subs r10, r7, #87       @ get char. numeric value (a-f)
         sublts r10, r7, #'0'    @ get char. numeric value (0-9)
         addge r12,r10,r12,LSL #4@ n * 16 + v
@@ -83,14 +83,13 @@ eval_word:
     cmp r3, #FORTH_IMM_MODE     @ immediate mode ?
     ldrb r8, [r12, #4]          @ get word flag
     andnes r9, r8, #0xff        @ in compile mode : is an immediate word ?
-    bne compile_word
-        adr r5, read_word
-        stmdb r0!, { r5 }       @ push return address
-        bic pc, r10, #3         @ align (point to code addr.) and jump to word code
+        adreq r5, read_word     @ it is an immediate so get return address
+        stmeqdb r0!, { r5 }     @ push return address
+        biceq pc, r10, #3       @ align (point to code addr.) and jump to word code
     compile_word:
-        bic r12, r10, #3        @ align (point to code addr.)
-        adr r10, 1f
-        b compile
+        bicne r12, r10, #3      @ align (point to code addr.)
+        adrne r10, 1f
+        bne compile
     1:                          @ generated code (compile mode)
     .word 0xe28f5008            @ opcode: add r5, pc, #8
     .word 0xe9200020            @ opcode: stmdb r0!, {r5}

@@ -1,8 +1,8 @@
 
 @ Macro to ease new words defs.
 @
-@ NOTE : IF dictionary data start at RAM address 0 a dummy word should be insterted as the first dictionary entry because
-@        linked word address for the second word will be 0; first word will never be checked unless a dummy word is added
+@ NOTE : When dictionary data start at RAM address 0 a dummy word should be added as the first entry because
+@        the second word will link back to address 0; this value is used to signal the end of the word chain
 
 @ FORTH WORD CONSTANTS
 .equ FORTH_WORD_FLAG_IMMEDIATE, 0
@@ -29,7 +29,7 @@
     .endif
     .byte \flag                 @ word flags (1=default, 0=immediate)
     .byte (3f - 2f - 1)         @ word length
-    2: .asciz "\string"         @ word
+    2: .asciz "\string"         @ word name
     3:
     .align 2
     .set forth_word_counter, forth_word_counter + 1

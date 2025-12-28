@@ -2,7 +2,7 @@
 
 Minimal, lightweight core [Forth](https://en.wikipedia.org/wiki/Forth_(programming_language)) implementation for ARM processors. (without [REPL](https://en.wikipedia.org/wiki/Read%E2%80%93eval%E2%80%93print_loop))
 
-* simplest example binary is **440 bytes** with minimal dictionary (immediate : ; +) of which *72 bytes* is for setup (when *adr* is used instead of pool), *368 bytes* is Forth core implementation
+* simplest example binary is **436 bytes** with minimal dictionary (immediate : ; +) of which *72 bytes* is for setup (when *adr* is used instead of a pool), *364 bytes* is Forth core implementation
 * use [Subroutine Threaded Code](https://www.bradrodriguez.com/papers/moving1.htm)
 * parse hex number (must be prefixed by any symbols)
 * stack top is stored into a register (r4) and implementation use all available registers for additional speed
