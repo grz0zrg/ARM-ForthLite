@@ -1,0 +1,30 @@
+: OS_WriteI $100 ; immediate
+: OS_ReadMonotonicTime $42 ; immediate
+: OS_ReadEscapeState $2c ; immediate
+: OS_Exit $11 ; immediate
+
+variable archismall_loop
+
+create ARCHISMALL_ARMv2_CODE
+  OS_WriteI $16 + swi
+  OS_WriteI $d + swi
+  [] $2c imm r15 r9 ldr
+  $140 imm r4 mov
+  archismall_loop !LABEL
+    OS_ReadMonotonicTime swi
+    $1 asr r3 r2 r2 add
+    $1 asr r2 r3 r3 sub
+    $13 lsl r0 r2 r2 sub
+
+    $18 lsr r3 r6 mov
+    r9 r4 r6 r7 mla
+
+    $4 lsr r0 r6 mov
+    [] $18 lsr r2 r7 r6 strb
+
+    OS_ReadEscapeState swi
+    archismall_loop @LABEL bcc
+  OS_Exit swi
+  $1fd8020 l,
+
+ARCHISMALL_ARMv2_CODE here $ff8 dump

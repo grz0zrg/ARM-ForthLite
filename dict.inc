@@ -45,6 +45,9 @@ end_define_word:
     str r7, [r14], #4           @ store RET opcode at the end of the newly defined word
     ret
 
+@ ============= PLATFORM SPECIFIC
+.include "platform.s"
+
 @ ========================== MISC
 forth_word "exit"
     ldmia r0!, { r5, r15 }      @ trash return address from return stack and return from higher-level word

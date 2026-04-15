@@ -946,35 +946,36 @@
 \ see:
 \ https://github.com/grz0zrg/codegolfing
 \ BBC BASIC ARM syntax is shown commented
-: OS_WriteI $100 ; immediate
-: OS_ReadMonotonicTime $42 ; immediate
-: OS_ReadEscapeState $2c ; immediate
-: OS_Exit $11 ; immediate
+\ remove \ # to test it out
+\ # : OS_WriteI $100 ; immediate
+\ # : OS_ReadMonotonicTime $42 ; immediate
+\ # : OS_ReadEscapeState $2c ; immediate
+\ # : OS_Exit $11 ; immediate
 
-variable archismall_loop
+\ # variable archismall_loop
 
-create ARCHISMALL_ARMv2_CODE
-    OS_WriteI $16 + swi            \ swi OS_WriteI+22
-    OS_WriteI $d + swi             \ swi OS_WriteI+13
-    [] $2c imm r15 r9 ldr          \ ldr r9,[r15,#44]
-    $140 imm r4 mov                \ mov r4,#320
-    archismall_loop !LABEL         \ .archismall_loop
-        OS_ReadMonotonicTime swi   \ swi OS_ReadMonotonicTime
-        $1 asr r3 r2 r2 add        \ add r2,r2,r3,asr #1
-        $1 asr r2 r3 r3 sub        \ sub r3,r3,r2,asr #1
-        $13 lsl r0 r2 r2 sub       \ sub r2,r2,r0,lsl #19
+\ # create ARCHISMALL_ARMv2_CODE
+\ #     OS_WriteI $16 + swi            \ swi OS_WriteI+22
+\ #     OS_WriteI $d + swi             \ swi OS_WriteI+13
+\ #     [] $2c imm r15 r9 ldr          \ ldr r9,[r15,#44]
+\ #     $140 imm r4 mov                \ mov r4,#320
+\ #     archismall_loop !LABEL         \ .archismall_loop
+\ #         OS_ReadMonotonicTime swi   \ swi OS_ReadMonotonicTime
+\ #         $1 asr r3 r2 r2 add        \ add r2,r2,r3,asr #1
+\ #         $1 asr r2 r3 r3 sub        \ sub r3,r3,r2,asr #1
+\ #         $13 lsl r0 r2 r2 sub       \ sub r2,r2,r0,lsl #19
 
-        $18 lsr r3 r6 mov          \ mov r6,r3,lsr #24
-        r9 r4 r6 r7 mla            \ mla r7,r6,r4,r9
+\ #         $18 lsr r3 r6 mov          \ mov r6,r3,lsr #24
+\ #         r9 r4 r6 r7 mla            \ mla r7,r6,r4,r9
 
-        $4 lsr r0 r6 mov           \ mov r6,r0,lsr #4
-        [] $18 lsr r2 r7 r6 strb   \ strb r6,[r7,r2,lsr #24]
+\ #         $4 lsr r0 r6 mov           \ mov r6,r0,lsr #4
+\ #         [] $18 lsr r2 r7 r6 strb   \ strb r6,[r7,r2,lsr #24]
 
-        OS_ReadEscapeState swi     \ swi OS_ReadEscapeState
-        archismall_loop @LABEL bcc \ bcc archismall_loop
-    OS_Exit swi                    \ swi OS_Exit
+\ #         OS_ReadEscapeState swi     \ swi OS_ReadEscapeState
+\ #         archismall_loop @LABEL bcc \ bcc archismall_loop
+\ #     OS_Exit swi                    \ swi OS_Exit
 \ .screenAddr
-    $1fec020 l,                    \ dcd &1fec020
+\ #     $1fec020 l,                    \ dcd &1fec020
 
 \ To dump ARCHISMALL_ARMv2_CODE content in Gforth :
 \ here constant ARCHISMALL_ARMv2_CODE_END

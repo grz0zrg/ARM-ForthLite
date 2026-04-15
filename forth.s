@@ -119,7 +119,7 @@ compile:
 @ ===============================
 forth:
 @ =================== READ A WORD ; any printable characters delimited by ' '
-@ ===================== ON RETURN ; does not skip / trim extra spaces !
+@ ===================== ON RETURN
 @                    end addr: r1
 @                 word length: r5
 @             word start addr: r9
@@ -128,6 +128,16 @@ forth:
 @                      r5, r8, r9
 @ ===============================
     read_word:
+.if SKIP_SPACES
+        0:
+            ldrb r8, [r1]
+            cmp r8, #0
+            beq exit
+            cmp r8, #' '
+            addls r1, r1, #1
+            bls 0b
+.endif
+
         mov r9, r1
         0:
             ldrb r8, [r1], #1
@@ -136,4 +146,5 @@ forth:
         subs r5, r1, r9         @ get word length; update condition flags
         subgts r5, #1           @ adjust if not empty
         bne find_word           @ find word if len > 0
+    exit:
     ldmia r0!, { pc }           @ "ret"

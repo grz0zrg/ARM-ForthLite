@@ -8,7 +8,7 @@ Minimal, lightweight core [Forth](https://en.wikipedia.org/wiki/Forth_(programmi
 * stack top is stored into a register (r4) and implementation use all available registers for additional speed
 * [Thumb-2](https://en.wikipedia.org/wiki/ARM_architecture_family#Thumb-2) can be used with small adaptations (add IT and PC changes), result is *~400* bytes example binary
 * not really written for bootstrapping support due to tricks but can still go with the [sectorforth](https://github.com/cesarblum/sectorforth) or [milliForth](https://github.com/fuzzballcat/milliForth) route (see experiment / misc)
-* target is a RPI Zero 1.3 (ARM1176JZF-S), probably works on any 32 bits ARM that support conditional instructions, side goal was [ARMv2](https://en.wikichip.org/wiki/arm/armv2) support but didn't test it yet (compile related generated opcodes may require adaptation !)
+* target is a RPI Zero 1.3 (ARM1176JZF-S), probably works on any 32 bits ARM that support conditional instructions, side goal was [ARMv2](https://en.wikichip.org/wiki/arm/armv2) support (works but `example.s` needs minor changes, see `riscos` directory)
 
 Not cache friendly, the cache isn't invalidated on code generation so independent instruction / data cache should be disabled for maximum reliability.
 
@@ -30,7 +30,7 @@ Also see my derivated compile only and performances focused [heretic Forth](http
 
 This implementation makes shortcuts to reduce code size that i consider ok because the REPL (or other methods) can handle it such as :
 
-* it doesn't trim extra whitespaces; should always be exactly one whitespace between words
+* it doesn't trim extra whitespaces by default; should always be exactly one whitespace between words unless `SKIP_SPACES=1`
 * no negative numbers parsing (can be built easily)
 * no errors handling such as stack underflow: check first commit for a version with unknown word error and stricter base 10 number parsing
 * no unknown words, they are parsed as number (base 16) since it is more convenient and to save some instructions
@@ -72,6 +72,22 @@ r7 in word definition can be used safely to save space, always 0 in this case. (
 Although this project differ slightly in goal i tried to implement the sectorforth dictionary as a testbed experiment (see `misc` directory) with a result of about ~648b of code in normal ARM mode without parsing numbers nor REPL.
 
 The main "limitation" compared to sectorforth is that the vars are all in registers here instead of in memory which ease some stuff but this require more words to modify them and sectorforth examples needs to be adapted in consequence, i converted about 50% of the sectorforth example until i reached the vars issue, may still be doable to reach 512b with a REPL with slightly different structure (or just perhaps pushing all vars on stack) or in Thumb-2 mode with size optimizations outlined above if 512b is a goal.
+
+## armflite for ARMv2 and related RISC OS
+
+`armflite` is a runnable version for early RISC OS (ARMv2 and related target), it bundle the `examples/ARMv2_assembler.fs` and is able to load / evaluate a Forth source from disk.
+
+Require ~3mb by default, see `riscos/!run.feb` Obey script, this script must be copied along with armflite binary.
+
+Forth source filepath (`@.fsprog`) is fixed for now, this file is expected to be placed along with `armflite` binary when `riscos/!run.feb` Obey script is used.
+
+`riscos/fsprog` is a Forth source example that assemble a [64 bytes ARMv2 program](https://www.onirom.fr/wiki/codegolf/archismall/) and dump it as a runnable `out,ff8` file.
+
+Build with `make armflite`, see `Makefile` and `riscos` directory.
+
+This version skip spaces for convenience.
+
+I use this as a custom BBC BASIC replacement / testbed for early ARM target.
 
 ## Build
 
