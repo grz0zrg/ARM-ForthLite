@@ -22,7 +22,8 @@ _start:
     @ compile flag
     mov r3, #FORTH_IMM_MODE
     @ save return addr. on return stack
-    stmdb r0!, { pc }
+    add r5, pc, #4
+    stmdb r0!, { r5 }
     b forth
 
     0:

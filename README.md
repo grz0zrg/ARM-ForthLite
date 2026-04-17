@@ -35,6 +35,8 @@ This implementation makes shortcuts to reduce code size that i consider ok becau
 * no errors handling such as stack underflow: check first commit for a version with unknown word error and stricter base 10 number parsing
 * no unknown words, they are parsed as number (base 16) since it is more convenient and to save some instructions
 
+Branch with link instruction is unused as r14 is taken by the dictionary end address (by design), this simplify the Forth core but has disadvantages such as bigger generated code and harder relocation.
+
 Code can be reduced further by not putting TOS in a register or inlining subroutines at the risk of being unreadable, "ret" could be put automatically also but require a "primitive" flag, may save some bytes with many primitives.
 
 Can also be reduced greatly by abandoning number parsing since it can be implemented with primitives, this is what sectorforth or milliForth do, would result in a *< 400b* example.
@@ -46,6 +48,8 @@ Another option is to abandon the mode (compile / immediate) and just generate co
 Target goal was mainly about code size / simplicity and modularity, speed may be okay. (didn't test much yet)
 
 May be easy to inline code or compile further due to STC usage in case ones want speed.
+
+Generated code isn't that efficient due to unused branch with link instruction (or even a simple branch), by design due to minimal Forth core complexity goal.
 
 ## Registers
 
@@ -101,7 +105,7 @@ See `Makefile`, it use Raspberry PI toolchain by default :
 
 It will assemble the simplest example by default. (may be changed in the Makefile)
 
-The Makefile do a sed pass on the input Forth file so it can take regular Forth sources as input, this pass remove comments + ensure one space between words + pack code as a single line and wrap it into a .asciz string directive, it output a .inc file that is included by *example.s*
+The Makefile do a sed pass on the input Forth file so it can take regular Forth sources as input, this pass remove comments + ensure one space between words + pack code as a single line and wrap it into a .asciz string directive, it output a .inc file that is included by *example.s*, this pass is intended for a minimal Forth core + dict.
 
 ## License
 

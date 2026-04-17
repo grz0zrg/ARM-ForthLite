@@ -23,9 +23,10 @@ _start:
     @ dict end
     ldr lr, =forth_dict_end_addr
     @ compile flag
-    stmdb r0!, { pc } @ note : on early ARM (ARMv2) STM with PC store curr. instruction addr. + 12 on stack
     mov r3, #FORTH_IMM_MODE
     @ save return addr. on return stack
+    add r5, pc, #4
+    stmdb r0!, { r5 }
     b forth
 
     @ = RISC OS calls to load / evaluate Forth source
@@ -40,8 +41,10 @@ _start:
     pop { r0-r6 }
 
     @ evaluate a program loaded at base return stack addr.
-    stmdb r0!, { pc }
     ldr r1, [r8]
+    @ save return addr. on return stack
+    add r5, pc, #4
+    stmdb r0!, { r5 }
     b forth
 
     @ OS_Exit
