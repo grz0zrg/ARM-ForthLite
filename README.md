@@ -8,7 +8,7 @@ Minimal, lightweight core [Forth](https://en.wikipedia.org/wiki/Forth_(programmi
 * stack top is stored into a register (r4) and implementation use all available registers for additional speed
 * [Thumb-2](https://en.wikipedia.org/wiki/ARM_architecture_family#Thumb-2) can be used with small adaptations (add IT and PC changes), result is *~400* bytes example binary
 * not really written for bootstrapping support due to tricks but can still go with the [sectorforth](https://github.com/cesarblum/sectorforth) or [milliForth](https://github.com/fuzzballcat/milliForth) route (see experiment / misc)
-* target is a RPI Zero 1.3 (ARM1176JZF-S), probably works on any 32 bits ARM that support conditional instructions, side goal was [ARMv2](https://en.wikichip.org/wiki/arm/armv2) support (works but `example.s` needs minor changes, see `riscos` directory)
+* target is a RPI Zero 1.3 (ARM1176JZF-S), probably works on any 32 bits ARM that support conditional instructions, side goal was [ARMv2](https://en.wikichip.org/wiki/arm/armv2) support (see `riscos` directory)
 
 Not cache friendly, the cache isn't invalidated on code generation so independent instruction / data cache should be disabled for maximum reliability.
 
@@ -18,7 +18,7 @@ Example can be tested online on [CPUlator](https://cpulator.01xz.net/?sys=arm)
 
 Primitives are defined into a separate file so a different set can be swapped easily, included ones are enough to run the Gforth ARMv2 assembler in the *examples* directory.
 
-Note that example text section start at 0x8000; see linker file.
+Note that example text section start at 0x8000 (RISC OS absolute programs); see linker file.
 
 See [write-up](https://www.onirom.fr/wiki/blog/30-11-2024_writing_a_small_forth_based_rpi_os_part_2_arm_forth_dialect_implementation/).
 
@@ -85,7 +85,7 @@ Require ~3mb by default, see `riscos/!run.feb` Obey script, this script must be 
 
 Forth source filepath (`@.fsprog`) is fixed for now, this file is expected to be placed along with `armflite` binary when `riscos/!run.feb` Obey script is used.
 
-`riscos/fsprog` is a Forth source example that assemble a [64 bytes ARMv2 program](https://www.onirom.fr/wiki/codegolf/archismall/) and dump it as a runnable `out,ff8` file.
+`riscos/fsprog` is a Forth source example that assemble a [64 bytes ARMv2 program](https://www.onirom.fr/wiki/codegolf/archismall/) and dump it as a runnable `out,ff8` file. (note : this program only works on certain early Acorn HW)
 
 Build with `make armflite`, see `Makefile` and `riscos` directory.
 

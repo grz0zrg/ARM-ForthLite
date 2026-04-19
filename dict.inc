@@ -52,7 +52,7 @@ end_define_word:
 forth_word "exit"
     ldmia r0!, { r5, r15 }      @ trash return address from return stack and return from higher-level word
 
-forth_word "\\"
+forth_word "\\" FORTH_WORD_FLAG_IMMEDIATE
 0:  ldrb r5, [r1], #1
     cmp r5, #0x20
     bhs 0b
