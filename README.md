@@ -93,6 +93,19 @@ This version skip spaces for convenience.
 
 I use this as a custom BBC BASIC replacement / testbed for early ARM target.
 
+## relocatable dictionary experiment (branch)
+
+Branch `dictreloc` has code tailored for a relocatable dictionary, also has slightly more efficient (space / speed wise) generated code. (use a generated branch instruction)
+
+Relocatable dictionary is done by generating branch instruction / removing absolute address in dictionary (see `dict_utils.inc`), Forth core / words were adapted for these changes, code didn't grow that much.
+
+Use case was to pre compile the ARMv2 assembler code and embed it as binary into `armflite` instead of loading a Forth source which must be evaluated every time the program run to populate dictionary before evaluating user code...
+
+`armflite` on this branch has a `dictgen` directory containing a program which load / evaluate a Forth source (the ARMv2 assembler) then dump the dictionary as `dict,ffd`, this dictionary is then included with incbin directive in `armflite.s`, resulting `armflite` binary size is a bit higher due to ARM code + unoptimal generated code, could be (roughly) equivalent / better if `bl` was generated instead of a simple branch. (note : on later ARM `str pc...` can be used, generated code become quite good but not compatible with early ARM, see branch `forth.s`)
+
+* `make dictgen` produce a `dictgen,ff8` RISC OS absolute program, this program load a Forth source called `armv2as` (which is `example/ARMv2_assembler.fs` in my case) when run under RISC OS, a `dict,ffd` file is produced by the program
+* `make armflite` produce the `armflite` program by bundling the `dict,ffd` binary (should be in project root folder)
+
 ## Build
 
 Assemble with [GNU Assembler](https://en.wikipedia.org/wiki/GNU_Assembler) and associated tools.

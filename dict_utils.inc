@@ -18,10 +18,10 @@
     .if forth_word_counter != 0 @ computed prev. word address
         .if forth_word_counter % 2 == 0
             888:
-            .word 666b
+            .word 888b - 666b
         .else
             666:
-            .word 888b
+            .word 666b - 888b
         .endif
     .else
         888:

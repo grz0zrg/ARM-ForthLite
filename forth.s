@@ -37,8 +37,9 @@ find_word:
             bne 1b
             b eval_word         @ found
         2:
-        ldr r12, [r12]          @ get previous dict. word addr.
-        cmp r12, #0
+        ldr r11, [r12]          @ get offset to previous dict. word
+        cmp r11, #0
+        subne r12, r12, r11     @ compute previous dict. word addr.
         bne 0b                  @ continue until no words to search for
 
 @ ================== PARSE NUMBER
@@ -55,14 +56,15 @@ parse_number:
         ldrb r7, [r9, #1]!      @ get char. (first char. is skipped, it is optional but safer; all numbers should be prefixed to avoid collisions with regular words)
         subs r10, r7, #87       @ get char. numeric value (a-f)
         sublts r10, r7, #'0'    @ get char. numeric value (0-9)
-        addge r12,r10,r12,LSL #4@ n * 16 + v
+        addge r11,r10,r11,LSL #4@ n * 16 + v
         subs r5, #1
         bgt 0b
         cmp r3, #FORTH_IMM_MODE @ immediate mode ?
         pusheq { r4 }           @ immediate mode: push old value to Forth stack
-        moveq r4, r12           @ immediate mode: push new value to Forth stack
+        moveq r4, r11           @ immediate mode: push new value to Forth stack
         beq read_word
     1:                          @ else: compile mode
+        mov r12, r11            @ get value to be written in r12
         adr r10, lit_code
         b compile
     lit_code:                   @ generated code (compile mode)
@@ -79,7 +81,7 @@ parse_number:
 @         r0, r5, r6, r8, r9, r10
 @ ===============================
 eval_word:
-    add r10, #4                 @ adjust word name end addr for alignment
+    add r10, r10, #4            @ adjust word name end addr for alignment
     cmp r3, #FORTH_IMM_MODE     @ immediate mode ?
     ldrb r8, [r12, #4]          @ get word flag
     andnes r9, r8, #0xff        @ in compile mode : is an immediate word ?
@@ -87,13 +89,23 @@ eval_word:
         stmeqdb r0!, { r5 }     @ push return address
         biceq pc, r10, #3       @ align (point to code addr.) and jump to word code
     compile_word:
-        bicne r12, r10, #3      @ align (point to code addr.)
-        adrne r10, 1f
-        bne compile
+        bic r12, r10, #3        @ align (point to code addr.)
+        sub r12, r14, r12       @ compute offset
+        add r12, r12, #16       @ adjust
+        mov r12, r12, lsr #2    @ word adjust
+        rsb r12, r12, #0xeb000000@ b instruction (negative offset)
+        adr r10, 1f
+        ldmia r10, {r10-r11}    @ load template code
+        stmia r14!, {r10-r12}   @ store generated code
+@ with str pc... (replace adr r10... up to stmia r14!...)
+@        ldr r11, [pc, #4]
+@        stmia r14!, {r11-r12}   @ store generated code
+        b read_word
     1:                          @ generated code (compile mode)
-    .word 0xe28f5008            @ opcode: add r5, pc, #8
+    .word 0xe28f5004            @ opcode: add r5, pc, #4
     .word 0xe9200020            @ opcode: stmdb r0!, {r5}
-    .word 0xe51ff004            @ opcode: ldr pc, [pc, #-4] @ word code addr. to jump to, stored after this, stored by "compile" from r12
+@ safe on later ARM (not ARMv2) 
+@    .word 0xe520f004            @ opcode: str pc, [r0, #-4]! @ branch instruction is stored after this
 
 @ ======================= COMPILE
 @        generated code addr.:r10

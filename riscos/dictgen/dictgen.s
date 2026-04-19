@@ -1,6 +1,5 @@
-@ ARMv2 and related Forth with ARMv2 bundled assembler for RISC OS
+@ ARMv2 dict. generator
 @ Tailored for ~3mb (tweak constants for more)
-@ "dict,ffd" must be generated with dictgen.s as it bundle an ARMv2 assembler
 
 @ FORTH MEMORY LAYOUT CONSTANTS
 .equ FORTH_DATA_STACK_SIZE, 1024 * 500 @ always multiple of 4
@@ -10,41 +9,49 @@
 .global _start
 
 _start:
-    adr r8, forth_retn_stack_addr
-
-    @ = RISC OS calls to load / evaluate Forth source
+    @ = RISC OS call to load Forth source
     @ OS_File -> load Forth source at base return stack addr.
     mov r0, #255
     adr r1, forth_filename
+    adr r8, forth_retn_stack_addr
     ldr r2, [r8]
     mov r3, #0
     swi #0x8
 
     @ = FORTH SETUP
-    @ return stack
-    ldr r0, [r8]
-    @ dict end
-    adr lr, forth_dict_end_addr
-    ldr lr, [lr]
-    @ load dict last word addr. (see dictgen.s)
-    adr r3, dict_start
-    ldr r2, [r3]
-    add r2, r2, r3
-    @ reset first word prev word distance to 0
-    mov r1, #0
-    str r1, [r3]
-    @ compile flag
-    mov r3, #FORTH_IMM_MODE
-    @ Forth source address
-    ldr r1, [r8]
     @ data stack
     adr r8, forth_data_stack_addr
     ldr sp, [r8]
+    @ return stack
+    adr r8, forth_retn_stack_addr
+    ldr r0, [r8]
+    @ input code
+    ldr r1, [r8]
+    @ dict last word
+    ldr r2, =forth_last_word_addr
+    @ dict end
+    ldr lr, =forth_dict_end_addr
+    @ compile flag
+    mov r3, #FORTH_IMM_MODE
     @ save return addr. on return stack
     add r5, pc, #4
     stmdb r0!, { r5 }
-    @ evaluate the program loaded at base return stack addr.
     b forth
+
+    @ save last word offset so we can retrieve it later
+    @ this reuse the fact that the first word prev word distance is always 0
+    @ note : should be set to 0 again after dict. file is loaded (see armflite.s)
+    adr r4, dict_start
+    sub r5, r2, r4
+    str r5, [r4]
+    @ = RISC OS call to save block of memory as a file
+    @ OS_File -> save dict. as a raw file
+    mov r0, #10
+    adr r1, dict_filename
+    adr r2, dict_filetype
+    ldr r2, [r2]
+    mov r5, r14
+    swi #0x8
 
     @ OS_Exit
     swi #0x11
@@ -53,11 +60,14 @@ _start:
         .word (_end + FORTH_DICT_SIZE + FORTH_DATA_STACK_SIZE)
     forth_retn_stack_addr:
         .word (_end + FORTH_DICT_SIZE + FORTH_DATA_STACK_SIZE + FORTH_RETN_STACK_SIZE)
-    forth_dict_end_addr:
-        .word _end
     forth_filename:
-        .asciz "@.fsprog"
+        .asciz "@.armv2as"
         .align 2
+    dict_filename:
+        .asciz "@.dict"
+        .align 2
+    dict_filetype:
+        .word 0xffd
     .pool
 
     @ = FORTH
@@ -65,5 +75,5 @@ _start:
 
     @ = FORTH DICTIONARY
     dict_start:
-        .incbin "dict,ffd"
+        .include "dict.inc"
 _end:

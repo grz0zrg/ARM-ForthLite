@@ -19,15 +19,20 @@ example.bin: program.fs.inc example.o
 	arm-linux-gnueabihf-objcopy example.elf -O binary example.bin
 	wc -c example.bin
 
-armflite: clean
-	$(MAKE) program.fs.inc input-file=ARMv2_assembler.fs
+dictgen: clean
 	cp riscos/platform.s platform.s
+	arm-linux-gnueabihf-as --defsym SKIP_SPACES=1 -march=armv2 riscos/dictgen/dictgen.s -o dictgen.o
+	arm-linux-gnueabihf-ld -T example.ld dictgen.o -o dictgen.elf
+	arm-linux-gnueabihf-objcopy dictgen.elf -O binary dictgen,ff8
+	wc -c dictgen,ff8
+
+armflite: clean
 	arm-linux-gnueabihf-as --defsym SKIP_SPACES=1 -march=armv2 riscos/armflite.s -o armflite.o
 	arm-linux-gnueabihf-ld -T example.ld armflite.o -o armflite.elf
 	arm-linux-gnueabihf-objcopy armflite.elf -O binary armflite,ff8
 	wc -c armflite,ff8
 
 clean:
-	rm -f *.o *.elf example.bin armflite,ff8 program.fs.inc platform.s
+	rm -f *.o *.elf example.bin armflite,ff8 program.fs.inc platform.s dictgen,ff8
 
-.PHONY: all clean armflite
+.PHONY: all clean armflite dictgen

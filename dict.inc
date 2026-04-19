@@ -19,7 +19,8 @@ store_create_content:
 
 forth_word ":" FORTH_WORD_FLAG_IMMEDIATE
 define_word:
-    str r2, [r14]               @ store previous word addr.
+    sub r5, r14, r2             @ compute offset to previous word
+    str r5, [r14]               @ store offset
     mov r2, r14                 @ update last dict. word addr.
     add r14, #6                 @ point to name field
     0:
@@ -88,31 +89,41 @@ forth_word "rot"
 @ ================== FLOW CONTROL
 forth_word "if" FORTH_WORD_FLAG_IMMEDIATE
     adr r10, if_branch_code
-    ldmia r10, {r8-r11}         @ load generated code
-    stmia r14!, {r8-r12}        @ store generated code at current definition code addr.
+    ldmia r10, {r8-r10}         @ load generated code
+    stmia r14!, {r8-r10}        @ store generated code at current definition code addr.
     push { r4 }
 cond_end:
-    sub r4, r14, #4             @ save jump addr. to TOS for later patching
+    sub r4, r14, #4             @ save placeholder addr. for later patching
     ret
     if_branch_code:             @ generated branch code
     .word 0xe3540000            @ opcode: cmp r4, #0
     .word 0xe49d4004            @ opcode: pop { r4 }
-    .word 0x128ff004            @ opcode: addne pc, pc, #4 @ go into "if" body if true
-    .word 0x051ff004            @ opcode: ldreq pc, [pc, #-4] @ go into "else" or skip if false, addr. to jump to is stored after this from r12, patched later
+beq_opcode:
+    .word 0x0a000000            @ opcode: beq placeholder, patched by then/else
 
 forth_word "then" FORTH_WORD_FLAG_IMMEDIATE
-    str r14, [r4]               @ patch jump addr. saved on TOS
+    ldr r12, [r4]               @ load placeholder
+    sub r9, r14, r4             @ compute offset
+    sub r9, r9, #8              @ adjust
+    mov r9, r9, asr #2          @ word adjust
+    bic r9, r9, #0xff000000     @ mask
+    orr r9, r9, r12             @ merge opcode
+    str r9, [r4]                @ store opcode
     pop { r4 }
     ret
 
 forth_word "else" FORTH_WORD_FLAG_IMMEDIATE
-    adr r10, el_branch_code
-    ldr r11, [r10]              @ load generated code
-    stmia r14!, {r11-r12}       @ store generated code at current definition code addr.
-    str r14, [r4]               @ patch jump addr. saved on TOS
+    mov r9, #0xea000000         @ b placeholder
+    str r9, [r14], #4           @ store placeholder
+    adr r10, beq_opcode
+    ldr r10, [r10]              @ get beq opcode
+    sub r9, r14, r4             @ compute offset
+    sub r9, r9, #8              @ adjust
+    mov r9, r9, asr #2          @ word adjust
+    bic r9, r9, #0xff000000     @ mask
+    orr r9, r9, r10             @ merge opcode
+    str r9, [r4]                @ store opcode
     b cond_end
-    el_branch_code:             @ generated branch code
-    .word 0xe51ff004            @ opcode: ldr pc, [pc, #-4] @ word code addr. to jump to, stored after this from r12, patched later
 
 forth_word "do" FORTH_WORD_FLAG_IMMEDIATE
     push { r4 }
@@ -128,9 +139,14 @@ forth_word "do" FORTH_WORD_FLAG_IMMEDIATE
 
 forth_word "loop" FORTH_WORD_FLAG_IMMEDIATE
     adr r10, loop_code
-    mov r12, r4
-    ldmia r10, {r6-r11}         @ load generated code
-    stmia r14!, {r6-r12}        @ store generated code at current definition code addr.
+    ldmia r10, {r6-r9}         @ load generated code
+    stmia r14!, {r6-r9}        @ store generated code at current definition code addr.
+    sub r12, r4, r14           @ compute offset
+    sub r12, r12, #8           @ adjust
+    mov r12, r12, asr #2       @ word adjust
+    bic r12, r12, #0xff000000  @ mask
+    orr r12, r12, #0x1a000000  @ bne opcode
+    str r12, [r14], #4         @ store opcode
     pop { r4 }
     ret
     loop_code:
@@ -138,8 +154,6 @@ forth_word "loop" FORTH_WORD_FLAG_IMMEDIATE
     .word 0xe2855001            @ opcode: add r5, r5, #1 @ increment loop index
     .word 0xe1550006            @ opcode: cmp r6, r5 @ compare with loop limit
     .word 0x19200060            @ opcode: stmnedb r0!, { r5, r6 } @ put loop params back
-    .word 0x159ff000            @ opcode: ldrne pc, [pc, #0] @ continue loop, stored after addeq from r12
-    .word 0x028ff000            @ opcode: addeq pc, pc, #0 @ exit loop
 
 forth_word "unloop"
     ldmia r0!, { r5, r6, r7 }   @ trash loop params from return stack
