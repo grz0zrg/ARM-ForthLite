@@ -97,7 +97,7 @@ I use this as a custom BBC BASIC replacement / testbed for early ARM target.
 
 Branch `dictreloc` has code tailored for a relocatable dictionary, also has slightly more efficient (space / speed wise) generated code. (use a generated branch instruction)
 
-Relocatable dictionary is done by generating branch instruction / removing absolute address in dictionary (see `dict_utils.inc`), Forth core / words were adapted for these changes, code didn't grow that much.
+Relocatable dictionary is done by generating branch instruction / removing absolute address in dictionary (see `dict_utils.inc`), Forth core / words were adapted for these changes, code didn't grow much, core might be less readable on latest commits (after `2aa0897`) due to "agressive" tricks.
 
 Use case was to pre compile the ARMv2 assembler code and embed it as binary into `armflite` instead of loading a Forth source which must be evaluated every time the program run to populate dictionary before evaluating user code...
 
