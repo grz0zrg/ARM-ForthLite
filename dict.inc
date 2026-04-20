@@ -224,8 +224,7 @@ forth_word "rol"
 
 @ ==================== ARITHMETIC
 forth_word "negate"
-    mvn r4, r4
-    add r4, r4, #1
+    rsb r4, r4, #0
     ret
 
 forth_word "*"
