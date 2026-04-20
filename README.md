@@ -9,6 +9,7 @@ Minimal, lightweight core [Forth](https://en.wikipedia.org/wiki/Forth_(programmi
 * [Thumb-2](https://en.wikipedia.org/wiki/ARM_architecture_family#Thumb-2) can be used with small adaptations (add IT and PC changes), result is *~400* bytes example binary
 * not really written for bootstrapping support due to tricks but can still go with the [sectorforth](https://github.com/cesarblum/sectorforth) or [milliForth](https://github.com/fuzzballcat/milliForth) route (see experiment / misc)
 * target is a RPI Zero 1.3 (ARM1176JZF-S), probably works on any 32 bits ARM that support conditional instructions, side goal was [ARMv2](https://en.wikichip.org/wiki/arm/armv2) support (see `riscos` directory)
+* relocatable dictionary support
 
 Not cache friendly, the cache isn't invalidated on code generation so independent instruction / data cache should be disabled for maximum reliability.
 
@@ -99,12 +100,18 @@ Branch `dictreloc` has code tailored for a relocatable dictionary, also has slig
 
 Relocatable dictionary is done by generating branch instruction / removing absolute address in dictionary (see `dict_utils.inc`), Forth core / words were adapted for these changes, code didn't grow much, core might be less readable on latest commits (after `2aa0897`) due to "agressive" tricks.
 
-Use case was to pre compile the ARMv2 assembler code and embed it as binary into `armflite` instead of loading a Forth source which must be evaluated every time the program run to populate dictionary before evaluating user code...
+Use case was to pre compile the ARMv2 assembler code and embed it as binary into `armflite` instead of loading a Forth source which must be evaluated every time the program run to populate dictionary before evaluating user code... which was rather slow on early ARM !
 
 `armflite` on this branch has a `dictgen` directory containing a program which load / evaluate a Forth source (the ARMv2 assembler) then dump the dictionary as `dict,ffd`, this dictionary is then included with incbin directive in `armflite.s`, resulting `armflite` binary size is a bit higher due to ARM code + unoptimal generated code, could be (roughly) equivalent / better if `bl` was generated instead of a simple branch. (note : on later ARM `str pc...` can be used, generated code become quite good but not compatible with early ARM, see branch `forth.s`)
 
 * `make dictgen` produce a `dictgen,ff8` RISC OS absolute program, this program load a Forth source called `armv2as` (which is `example/ARMv2_assembler.fs` in my case) when run under RISC OS, a `dict,ffd` file is produced by the program
 * `make armflite` produce the `armflite` program by bundling the `dict,ffd` binary (should be in project root folder)
+
+Here are some optimizations i didn't do (very tricky / meh readability), gain ~2 instructions on core codesize :
+
+* replace `find_word` `b eval_word` by inline code -> `parse_number` `b read_word` can then be removed
+* use `tst r3,r8` in `eval_word` and remove the two `cmp` -> word flag constant should be inverted in `dict_utils.inc` for this to work
+* `then` / `else` words has redundant code which could be reduced down by reusing code
 
 ## Build
 

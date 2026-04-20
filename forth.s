@@ -10,16 +10,17 @@
 .equ FORTH_IMM_MODE, 0
 .equ FORTH_COM_MODE, 1
 
-lit_code:                   @ generated code for LIT (compile mode)
-    .word 0xe52d4004        @ opcode: push { r4 }
-    .word 0xe59f4000        @ opcode: ldr r4, [pc, #0]
-    .word 0xe28ff000        @ opcode: add pc, #0 @ value is stored after this instruction, it is stored by "compile" from r12
+@ ================ GENERATED CODE
+lit_code:                       @ generated code for LIT (compile mode)
+    .word 0xe52d4004            @ opcode: push { r4 }
+    .word 0xe59f4000            @ opcode: ldr r4, [pc, #0]
+    .word 0xe28ff000            @ opcode: add pc, #0 @ value is stored after this instruction, it is stored by "compile" from r12
 
-cal_code:                   @ generated code for word call (compile mode)
-    .word 0xe28f5004        @ opcode: add r5, pc, #4
-    .word 0xe9200020        @ opcode: stmdb r0!, {r5}
-                            @ can be replaced safely on later ARM (not ARMv2) by :
-@    .word 0xe520f004        @ opcode: str pc, [r0, #-4]! @ branch instruction is stored after this
+cal_code:                       @ generated code for word call (compile mode)
+    .word 0xe28f5004            @ opcode: add r5, pc, #4
+    .word 0xe9200020            @ opcode: stmdb r0!, {r5}
+                                @ can be replaced safely on later ARM (not ARMv2) by :
+@    .word 0xe520f004            @ opcode: str pc, [r0, #-4]! @ branch instruction is stored after this
 
 @ =================== FIND A WORD ; start from dict. last word then up until the first one
 @        last dict. word addr: r2

@@ -139,14 +139,14 @@ forth_word "do" FORTH_WORD_FLAG_IMMEDIATE
 
 forth_word "loop" FORTH_WORD_FLAG_IMMEDIATE
     adr r10, loop_code
-    ldmia r10, {r6-r9}         @ load generated code
-    stmia r14!, {r6-r9}        @ store generated code at current definition code addr.
-    sub r12, r4, r14           @ compute offset
-    sub r12, r12, #8           @ adjust
-    mov r12, r12, asr #2       @ word adjust
-    bic r12, r12, #0xff000000  @ mask
-    orr r12, r12, #0x1a000000  @ bne opcode
-    str r12, [r14], #4         @ store opcode
+    ldmia r10, {r6-r9}          @ load generated code
+    stmia r14!, {r6-r9}         @ store generated code at current definition code addr.
+    sub r12, r4, r14            @ compute offset
+    sub r12, r12, #8            @ adjust
+    mov r12, r12, asr #2        @ word adjust
+    bic r12, r12, #0xff000000   @ mask
+    orr r12, r12, #0x1a000000   @ bne opcode
+    str r12, [r14], #4          @ store opcode
     pop { r4 }
     ret
     loop_code:
@@ -238,8 +238,7 @@ forth_word "rol"
 
 @ ==================== ARITHMETIC
 forth_word "negate"
-    mvn r4, r4
-    add r4, r4, #1
+    rsb r4, r4, #0
     ret
 
 forth_word "*"
