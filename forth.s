@@ -33,7 +33,7 @@ find_word:
             ldrb r8, [r10], #1  @ dict. word char.
             cmp r6, r8
             bne 2f              @ skip word on != char.
-            subs r7, #1
+            subs r7, r7, #1
             bne 1b
             b eval_word         @ found
         2:
@@ -45,7 +45,7 @@ find_word:
 @                compile mode: r3
 @                 word length: r5
 @             word start addr: r9
-@                          0: r10
+@                          0: r12
 @ ===================== ON RETURN
 @ ===================== CLOBBERED
 @            r4, r5, r7, r10, r12
@@ -56,7 +56,7 @@ parse_number:
         subs r10, r7, #87       @ get char. numeric value (a-f)
         sublts r10, r7, #'0'    @ get char. numeric value (0-9)
         addge r12,r10,r12,LSL #4@ n * 16 + v
-        subs r5, #1
+        subs r5, r5, #1
         bgt 0b
         cmp r3, #FORTH_IMM_MODE @ immediate mode ?
         pusheq { r4 }           @ immediate mode: push old value to Forth stack
@@ -76,7 +76,7 @@ parse_number:
 @        found word dict addr:r12
 @ ===================== ON RETURN
 @ ===================== CLOBBERED
-@         r0, r5, r6, r8, r9, r10
+@             r0, r5, r8, r9, r10
 @ ===============================
 eval_word:
     add r10, #4                 @ adjust word name end addr for alignment
@@ -125,7 +125,7 @@ forth:
 @             word start addr: r9
 @             cond. flags updated
 @ ===================== CLOBBERED
-@                      r5, r8, r9
+@                  r1, r5, r8, r9
 @ ===============================
     read_word:
 .if SKIP_SPACES
@@ -141,10 +141,10 @@ forth:
         mov r9, r1
         0:
             ldrb r8, [r1], #1
-            subs r8, #' '
+            subs r8, r8, #' '
             bgt 0b
         subs r5, r1, r9         @ get word length; update condition flags
-        subgts r5, #1           @ adjust if not empty
+        subgts r5, r5, #1       @ adjust if not empty
         bne find_word           @ find word if len > 0
     exit:
     ldmia r0!, { pc }           @ "ret"
