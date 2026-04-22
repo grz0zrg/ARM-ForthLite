@@ -88,6 +88,8 @@ Forth source filepath (`@.fsprog`) is fixed for now, this file is expected to be
 
 `riscos/fsprog` is a Forth source example that assemble a [64 bytes ARMv2 program](https://www.onirom.fr/wiki/codegolf/archismall/) and dump it as a runnable `out,ff8` file. (note : this program only works on certain early Acorn HW)
 
+`riscos/fsprog_wormholes` is a slightly more complex Forth source that assemble a [256 bytes ARMv2 program](https://www.onirom.fr/wiki/codegolf/wormholes/) and dump it as a runnable `out,ff8` file.
+
 Build with `make armflite`, see `Makefile` and `riscos` directory.
 
 This version skip spaces for convenience.
