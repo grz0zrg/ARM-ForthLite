@@ -1,0 +1,109 @@
+\ WORMHOLES - 256b RISC OS intro
+\ ------------------> by The Orz
+: OS_Byte $6 ; immediate
+: OS_WriteI $100 ; immediate
+: OS_ReadVduVariables $31 ; immediate
+: OS_RemoveCursors $36 ; immediate
+: OS_ReadEscapeState $2c ; immediate
+: OS_Exit $11 ; immediate
+
+variable l1
+variable l2
+
+create WORMHOLES_ARMv2_CODE
+  OS_WriteI $16 + swi
+  OS_WriteI $15 + swi \ mode 21
+
+  \ get screen adr in r14
+  $e4 imm r15 r0 add
+  $ec imm r15 r1 add
+  OS_ReadVduVariables swi
+  [] $0 imm r1 r14 ldr
+
+  OS_RemoveCursors swi
+
+  $dc imm r15 r13 add \ buffer
+
+  \ screen clear
+  $0 imm r5 mov
+  $40000 imm r0 mov
+  l1 !LABEL
+   [] $0 lsl r0 r13 r5 str
+   $4 imm r0 r0 subs
+   l1 @LABEL bne
+
+  \ texgen
+  $170 imm r4 mov
+  $800000 imm r3 mov
+  l1 !LABEL
+  $2 asr r5 r4 r4 add
+  $1 lsr r4 r5 r5 sub
+  $2 asr r5 r4 r4 add
+
+  $e lsr r4 r5 r5 eor
+
+  $17 lsr r5 r6 mov
+  $9 lsl r6 r13 r6 add
+
+  $12 asr r3 r7 mov
+  $14 asr r3 r7 r7 eor
+  $f6 imm r7 r7 sub
+
+  [] $17 lsr r4 r6 r7 strb
+
+  $1 imm r3 r3 subs
+  l1 @LABEL bne
+
+  $1000 imm r4 mov
+  l1 !LABEL
+   $13 imm r0 mov
+   OS_Byte swi \ vsync
+
+   \ rotate
+   $8 asr r4 r3 r3 add
+   $7 asr r3 r4 r4 sub
+
+   \ rotozoom setup
+   $0 lsl r4 r3 r5 add
+   $8 lsl r5 r5 mov
+   $0 lsl r5 r6 mvn
+   $0 lsl r5 r7 mov
+   $0 lsl r6 r8 mov
+
+   $0 imm r9 mov
+
+   $1ec imm r0 r12 add \ 511
+   \ draw loop
+   $50000 imm r1 mov
+   l2 !LABEL
+     $c lsr r5 r12 r10 and
+     $c lsr r6 r12 r11 and
+     $9 lsl r11 r10 r10 add
+     [] $0 lsl r10 r13 r10 ldrb
+     \ background color rotation
+     $0 imm r10 cmp
+     [] $0 lsl r1 r14 r10 ldreqb
+     $1 imm r10 r10 addeq
+     [] $0 lsl r1 r14 r10 strb
+
+     $1 imm r9 r9 subs
+     $0 lsl r4 r5 r5 addpl
+     $0 lsl r3 r6 r6 addpl
+     $26c imm r0 r9 addmi
+     $0 lsl r3 r7 r7 addmi
+     $0 lsl r4 r8 r8 addmi
+     $0 lsl r7 r5 movmi
+     $0 lsl r8 r6 mvnmi
+
+     $1 imm r1 r1 subs
+     l2 @LABEL bpl
+
+   OS_ReadEscapeState swi
+   OS_Exit swics
+  l1 @LABEL b
+
+  $94 l,
+  $1 negate l,
+  $0 l, \ pad (useless)
+
+WORMHOLES_ARMv2_CODE here $ff8 dump
