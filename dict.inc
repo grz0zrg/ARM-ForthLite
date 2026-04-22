@@ -194,6 +194,10 @@ forth_word "0>"
     movle r4, #0
     ret
 
+forth_word "0<"
+    mov r4, r4, asr #31
+    ret
+
 forth_word "u<"
     pop { r5 }
     cmp r4, r5

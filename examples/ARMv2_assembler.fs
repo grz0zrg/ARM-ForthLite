@@ -38,10 +38,13 @@
     else
         or rot $7 lshift
     then or ;
-: ARM2_DPI
+: ARM2_DPI_RN
+    ARM2_ENCODE_RN swap
+    ARM2_ENCODE_RM_IMM or ;
+: ARM2_DPI_RD
     ARM2_ENCODE_RD swap
     ARM2_ENCODE_RM_IMM or ;
-: ARM2_DPI_RN
+: ARM2_DPI_RD_RN
     ARM2_ENCODE_RD swap ARM2_ENCODE_RN or
     swap ARM2_ENCODE_RM_IMM or ;
 \ ------------ SINGLE DATA TRANSFER UTILS
@@ -50,10 +53,10 @@
 : ARM2_BW $400000 ;
 : ARM2_WB $200000 ;
 : ARM2_?UD
-    dup 0> if
-        ARM2_UD or
-    else
+    dup 0< if
         negate
+    else
+        ARM2_UD or
     then ;
 : ARM2_OFF?_RM?
     ARM2_IMMEDIATE over fand if
@@ -487,453 +490,453 @@
 : mlales ARM2_MLA ARM2_S ARM2_LE l, ; immediate
 : mlas ARM2_MLA ARM2_S ARM2_AL l, ; immediate
 \ ----------------------- DATA PROCESSING
-: moveq ARM2_DPI ARM2_EQ ARM2_MOV l, ; immediate
-: movne ARM2_DPI ARM2_NE ARM2_MOV l, ; immediate
-: movcs ARM2_DPI ARM2_CS ARM2_MOV l, ; immediate
-: movcc ARM2_DPI ARM2_CC ARM2_MOV l, ; immediate
-: movmi ARM2_DPI ARM2_MI ARM2_MOV l, ; immediate
-: movpl ARM2_DPI ARM2_PL ARM2_MOV l, ; immediate
-: movvs ARM2_DPI ARM2_VS ARM2_MOV l, ; immediate
-: movvc ARM2_DPI ARM2_VC ARM2_MOV l, ; immediate
-: movhi ARM2_DPI ARM2_HI ARM2_MOV l, ; immediate
-: movls ARM2_DPI ARM2_LS ARM2_MOV l, ; immediate
-: movge ARM2_DPI ARM2_GE ARM2_MOV l, ; immediate
-: movlt ARM2_DPI ARM2_LT ARM2_MOV l, ; immediate
-: movgt ARM2_DPI ARM2_GT ARM2_MOV l, ; immediate
-: movle ARM2_DPI ARM2_LE ARM2_MOV l, ; immediate
-: mov ARM2_DPI ARM2_AL ARM2_MOV l, ; immediate
+: moveq ARM2_DPI_RD ARM2_EQ ARM2_MOV l, ; immediate
+: movne ARM2_DPI_RD ARM2_NE ARM2_MOV l, ; immediate
+: movcs ARM2_DPI_RD ARM2_CS ARM2_MOV l, ; immediate
+: movcc ARM2_DPI_RD ARM2_CC ARM2_MOV l, ; immediate
+: movmi ARM2_DPI_RD ARM2_MI ARM2_MOV l, ; immediate
+: movpl ARM2_DPI_RD ARM2_PL ARM2_MOV l, ; immediate
+: movvs ARM2_DPI_RD ARM2_VS ARM2_MOV l, ; immediate
+: movvc ARM2_DPI_RD ARM2_VC ARM2_MOV l, ; immediate
+: movhi ARM2_DPI_RD ARM2_HI ARM2_MOV l, ; immediate
+: movls ARM2_DPI_RD ARM2_LS ARM2_MOV l, ; immediate
+: movge ARM2_DPI_RD ARM2_GE ARM2_MOV l, ; immediate
+: movlt ARM2_DPI_RD ARM2_LT ARM2_MOV l, ; immediate
+: movgt ARM2_DPI_RD ARM2_GT ARM2_MOV l, ; immediate
+: movle ARM2_DPI_RD ARM2_LE ARM2_MOV l, ; immediate
+: mov ARM2_DPI_RD ARM2_AL ARM2_MOV l, ; immediate
 
-: mvneq ARM2_DPI ARM2_EQ ARM2_MVN l, ; immediate
-: mvnne ARM2_DPI ARM2_NE ARM2_MVN l, ; immediate
-: mvncs ARM2_DPI ARM2_CS ARM2_MVN l, ; immediate
-: mvncc ARM2_DPI ARM2_CC ARM2_MVN l, ; immediate
-: mvnmi ARM2_DPI ARM2_MI ARM2_MVN l, ; immediate
-: mvnpl ARM2_DPI ARM2_PL ARM2_MVN l, ; immediate
-: mvnvs ARM2_DPI ARM2_VS ARM2_MVN l, ; immediate
-: mvnvc ARM2_DPI ARM2_VC ARM2_MVN l, ; immediate
-: mvnhi ARM2_DPI ARM2_HI ARM2_MVN l, ; immediate
-: mvnls ARM2_DPI ARM2_LS ARM2_MVN l, ; immediate
-: mvnge ARM2_DPI ARM2_GE ARM2_MVN l, ; immediate
-: mvnlt ARM2_DPI ARM2_LT ARM2_MVN l, ; immediate
-: mvngt ARM2_DPI ARM2_GT ARM2_MVN l, ; immediate
-: mvnle ARM2_DPI ARM2_LE ARM2_MVN l, ; immediate
-: mvn ARM2_DPI ARM2_AL ARM2_MVN l, ; immediate
+: mvneq ARM2_DPI_RD ARM2_EQ ARM2_MVN l, ; immediate
+: mvnne ARM2_DPI_RD ARM2_NE ARM2_MVN l, ; immediate
+: mvncs ARM2_DPI_RD ARM2_CS ARM2_MVN l, ; immediate
+: mvncc ARM2_DPI_RD ARM2_CC ARM2_MVN l, ; immediate
+: mvnmi ARM2_DPI_RD ARM2_MI ARM2_MVN l, ; immediate
+: mvnpl ARM2_DPI_RD ARM2_PL ARM2_MVN l, ; immediate
+: mvnvs ARM2_DPI_RD ARM2_VS ARM2_MVN l, ; immediate
+: mvnvc ARM2_DPI_RD ARM2_VC ARM2_MVN l, ; immediate
+: mvnhi ARM2_DPI_RD ARM2_HI ARM2_MVN l, ; immediate
+: mvnls ARM2_DPI_RD ARM2_LS ARM2_MVN l, ; immediate
+: mvnge ARM2_DPI_RD ARM2_GE ARM2_MVN l, ; immediate
+: mvnlt ARM2_DPI_RD ARM2_LT ARM2_MVN l, ; immediate
+: mvngt ARM2_DPI_RD ARM2_GT ARM2_MVN l, ; immediate
+: mvnle ARM2_DPI_RD ARM2_LE ARM2_MVN l, ; immediate
+: mvn ARM2_DPI_RD ARM2_AL ARM2_MVN l, ; immediate
 
-: eoreq ARM2_DPI_RN ARM2_EQ ARM2_EOR l, ; immediate
-: eorne ARM2_DPI_RN ARM2_NE ARM2_EOR l, ; immediate
-: eorcs ARM2_DPI_RN ARM2_CS ARM2_EOR l, ; immediate
-: eorcc ARM2_DPI_RN ARM2_CC ARM2_EOR l, ; immediate
-: eormi ARM2_DPI_RN ARM2_MI ARM2_EOR l, ; immediate
-: eorpl ARM2_DPI_RN ARM2_PL ARM2_EOR l, ; immediate
-: eorvs ARM2_DPI_RN ARM2_VS ARM2_EOR l, ; immediate
-: eorvc ARM2_DPI_RN ARM2_VC ARM2_EOR l, ; immediate
-: eorhi ARM2_DPI_RN ARM2_HI ARM2_EOR l, ; immediate
-: eorls ARM2_DPI_RN ARM2_LS ARM2_EOR l, ; immediate
-: eorge ARM2_DPI_RN ARM2_GE ARM2_EOR l, ; immediate
-: eorlt ARM2_DPI_RN ARM2_LT ARM2_EOR l, ; immediate
-: eorgt ARM2_DPI_RN ARM2_GT ARM2_EOR l, ; immediate
-: eorle ARM2_DPI_RN ARM2_LE ARM2_EOR l, ; immediate
-: eor ARM2_DPI_RN ARM2_AL ARM2_EOR l, ; immediate
+: eoreq ARM2_DPI_RD_RN ARM2_EQ ARM2_EOR l, ; immediate
+: eorne ARM2_DPI_RD_RN ARM2_NE ARM2_EOR l, ; immediate
+: eorcs ARM2_DPI_RD_RN ARM2_CS ARM2_EOR l, ; immediate
+: eorcc ARM2_DPI_RD_RN ARM2_CC ARM2_EOR l, ; immediate
+: eormi ARM2_DPI_RD_RN ARM2_MI ARM2_EOR l, ; immediate
+: eorpl ARM2_DPI_RD_RN ARM2_PL ARM2_EOR l, ; immediate
+: eorvs ARM2_DPI_RD_RN ARM2_VS ARM2_EOR l, ; immediate
+: eorvc ARM2_DPI_RD_RN ARM2_VC ARM2_EOR l, ; immediate
+: eorhi ARM2_DPI_RD_RN ARM2_HI ARM2_EOR l, ; immediate
+: eorls ARM2_DPI_RD_RN ARM2_LS ARM2_EOR l, ; immediate
+: eorge ARM2_DPI_RD_RN ARM2_GE ARM2_EOR l, ; immediate
+: eorlt ARM2_DPI_RD_RN ARM2_LT ARM2_EOR l, ; immediate
+: eorgt ARM2_DPI_RD_RN ARM2_GT ARM2_EOR l, ; immediate
+: eorle ARM2_DPI_RD_RN ARM2_LE ARM2_EOR l, ; immediate
+: eor ARM2_DPI_RD_RN ARM2_AL ARM2_EOR l, ; immediate
 
-: orreq ARM2_DPI_RN ARM2_EQ ARM2_ORR l, ; immediate
-: orrne ARM2_DPI_RN ARM2_NE ARM2_ORR l, ; immediate
-: orrcs ARM2_DPI_RN ARM2_CS ARM2_ORR l, ; immediate
-: orrcc ARM2_DPI_RN ARM2_CC ARM2_ORR l, ; immediate
-: orrmi ARM2_DPI_RN ARM2_MI ARM2_ORR l, ; immediate
-: orrpl ARM2_DPI_RN ARM2_PL ARM2_ORR l, ; immediate
-: orrvs ARM2_DPI_RN ARM2_VS ARM2_ORR l, ; immediate
-: orrvc ARM2_DPI_RN ARM2_VC ARM2_ORR l, ; immediate
-: orrhi ARM2_DPI_RN ARM2_HI ARM2_ORR l, ; immediate
-: orrls ARM2_DPI_RN ARM2_LS ARM2_ORR l, ; immediate
-: orrge ARM2_DPI_RN ARM2_GE ARM2_ORR l, ; immediate
-: orrlt ARM2_DPI_RN ARM2_LT ARM2_ORR l, ; immediate
-: orrgt ARM2_DPI_RN ARM2_GT ARM2_ORR l, ; immediate
-: orrle ARM2_DPI_RN ARM2_LE ARM2_ORR l, ; immediate
-: orr ARM2_DPI_RN ARM2_AL ARM2_ORR l, ; immediate
+: orreq ARM2_DPI_RD_RN ARM2_EQ ARM2_ORR l, ; immediate
+: orrne ARM2_DPI_RD_RN ARM2_NE ARM2_ORR l, ; immediate
+: orrcs ARM2_DPI_RD_RN ARM2_CS ARM2_ORR l, ; immediate
+: orrcc ARM2_DPI_RD_RN ARM2_CC ARM2_ORR l, ; immediate
+: orrmi ARM2_DPI_RD_RN ARM2_MI ARM2_ORR l, ; immediate
+: orrpl ARM2_DPI_RD_RN ARM2_PL ARM2_ORR l, ; immediate
+: orrvs ARM2_DPI_RD_RN ARM2_VS ARM2_ORR l, ; immediate
+: orrvc ARM2_DPI_RD_RN ARM2_VC ARM2_ORR l, ; immediate
+: orrhi ARM2_DPI_RD_RN ARM2_HI ARM2_ORR l, ; immediate
+: orrls ARM2_DPI_RD_RN ARM2_LS ARM2_ORR l, ; immediate
+: orrge ARM2_DPI_RD_RN ARM2_GE ARM2_ORR l, ; immediate
+: orrlt ARM2_DPI_RD_RN ARM2_LT ARM2_ORR l, ; immediate
+: orrgt ARM2_DPI_RD_RN ARM2_GT ARM2_ORR l, ; immediate
+: orrle ARM2_DPI_RD_RN ARM2_LE ARM2_ORR l, ; immediate
+: orr ARM2_DPI_RD_RN ARM2_AL ARM2_ORR l, ; immediate
 
-: andeq ARM2_DPI_RN ARM2_EQ ARM2_AND l, ; immediate
-: andne ARM2_DPI_RN ARM2_NE ARM2_AND l, ; immediate
-: andcs ARM2_DPI_RN ARM2_CS ARM2_AND l, ; immediate
-: andcc ARM2_DPI_RN ARM2_CC ARM2_AND l, ; immediate
-: andmi ARM2_DPI_RN ARM2_MI ARM2_AND l, ; immediate
-: andpl ARM2_DPI_RN ARM2_PL ARM2_AND l, ; immediate
-: andvs ARM2_DPI_RN ARM2_VS ARM2_AND l, ; immediate
-: andvc ARM2_DPI_RN ARM2_VC ARM2_AND l, ; immediate
-: andhi ARM2_DPI_RN ARM2_HI ARM2_AND l, ; immediate
-: andls ARM2_DPI_RN ARM2_LS ARM2_AND l, ; immediate
-: andge ARM2_DPI_RN ARM2_GE ARM2_AND l, ; immediate
-: andlt ARM2_DPI_RN ARM2_LT ARM2_AND l, ; immediate
-: andgt ARM2_DPI_RN ARM2_GT ARM2_AND l, ; immediate
-: andle ARM2_DPI_RN ARM2_LE ARM2_AND l, ; immediate
-: and ARM2_DPI_RN ARM2_AL ARM2_AND l, ; immediate
+: andeq ARM2_DPI_RD_RN ARM2_EQ ARM2_AND l, ; immediate
+: andne ARM2_DPI_RD_RN ARM2_NE ARM2_AND l, ; immediate
+: andcs ARM2_DPI_RD_RN ARM2_CS ARM2_AND l, ; immediate
+: andcc ARM2_DPI_RD_RN ARM2_CC ARM2_AND l, ; immediate
+: andmi ARM2_DPI_RD_RN ARM2_MI ARM2_AND l, ; immediate
+: andpl ARM2_DPI_RD_RN ARM2_PL ARM2_AND l, ; immediate
+: andvs ARM2_DPI_RD_RN ARM2_VS ARM2_AND l, ; immediate
+: andvc ARM2_DPI_RD_RN ARM2_VC ARM2_AND l, ; immediate
+: andhi ARM2_DPI_RD_RN ARM2_HI ARM2_AND l, ; immediate
+: andls ARM2_DPI_RD_RN ARM2_LS ARM2_AND l, ; immediate
+: andge ARM2_DPI_RD_RN ARM2_GE ARM2_AND l, ; immediate
+: andlt ARM2_DPI_RD_RN ARM2_LT ARM2_AND l, ; immediate
+: andgt ARM2_DPI_RD_RN ARM2_GT ARM2_AND l, ; immediate
+: andle ARM2_DPI_RD_RN ARM2_LE ARM2_AND l, ; immediate
+: and ARM2_DPI_RD_RN ARM2_AL ARM2_AND l, ; immediate
 
-: biceq ARM2_DPI_RN ARM2_EQ ARM2_BIC l, ; immediate
-: bicne ARM2_DPI_RN ARM2_NE ARM2_BIC l, ; immediate
-: biccs ARM2_DPI_RN ARM2_CS ARM2_BIC l, ; immediate
-: biccc ARM2_DPI_RN ARM2_CC ARM2_BIC l, ; immediate
-: bicmi ARM2_DPI_RN ARM2_MI ARM2_BIC l, ; immediate
-: bicpl ARM2_DPI_RN ARM2_PL ARM2_BIC l, ; immediate
-: bicvs ARM2_DPI_RN ARM2_VS ARM2_BIC l, ; immediate
-: bicvc ARM2_DPI_RN ARM2_VC ARM2_BIC l, ; immediate
-: bichi ARM2_DPI_RN ARM2_HI ARM2_BIC l, ; immediate
-: bicls ARM2_DPI_RN ARM2_LS ARM2_BIC l, ; immediate
-: bicge ARM2_DPI_RN ARM2_GE ARM2_BIC l, ; immediate
-: biclt ARM2_DPI_RN ARM2_LT ARM2_BIC l, ; immediate
-: bicgt ARM2_DPI_RN ARM2_GT ARM2_BIC l, ; immediate
-: bicle ARM2_DPI_RN ARM2_LE ARM2_BIC l, ; immediate
-: bic ARM2_DPI_RN ARM2_AL ARM2_BIC l, ; immediate
+: biceq ARM2_DPI_RD_RN ARM2_EQ ARM2_BIC l, ; immediate
+: bicne ARM2_DPI_RD_RN ARM2_NE ARM2_BIC l, ; immediate
+: biccs ARM2_DPI_RD_RN ARM2_CS ARM2_BIC l, ; immediate
+: biccc ARM2_DPI_RD_RN ARM2_CC ARM2_BIC l, ; immediate
+: bicmi ARM2_DPI_RD_RN ARM2_MI ARM2_BIC l, ; immediate
+: bicpl ARM2_DPI_RD_RN ARM2_PL ARM2_BIC l, ; immediate
+: bicvs ARM2_DPI_RD_RN ARM2_VS ARM2_BIC l, ; immediate
+: bicvc ARM2_DPI_RD_RN ARM2_VC ARM2_BIC l, ; immediate
+: bichi ARM2_DPI_RD_RN ARM2_HI ARM2_BIC l, ; immediate
+: bicls ARM2_DPI_RD_RN ARM2_LS ARM2_BIC l, ; immediate
+: bicge ARM2_DPI_RD_RN ARM2_GE ARM2_BIC l, ; immediate
+: biclt ARM2_DPI_RD_RN ARM2_LT ARM2_BIC l, ; immediate
+: bicgt ARM2_DPI_RD_RN ARM2_GT ARM2_BIC l, ; immediate
+: bicle ARM2_DPI_RD_RN ARM2_LE ARM2_BIC l, ; immediate
+: bic ARM2_DPI_RD_RN ARM2_AL ARM2_BIC l, ; immediate
 
-: addeq ARM2_DPI_RN ARM2_EQ ARM2_ADD l, ; immediate
-: addne ARM2_DPI_RN ARM2_NE ARM2_ADD l, ; immediate
-: addcs ARM2_DPI_RN ARM2_CS ARM2_ADD l, ; immediate
-: addcc ARM2_DPI_RN ARM2_CC ARM2_ADD l, ; immediate
-: addmi ARM2_DPI_RN ARM2_MI ARM2_ADD l, ; immediate
-: addpl ARM2_DPI_RN ARM2_PL ARM2_ADD l, ; immediate
-: addvs ARM2_DPI_RN ARM2_VS ARM2_ADD l, ; immediate
-: addvc ARM2_DPI_RN ARM2_VC ARM2_ADD l, ; immediate
-: addhi ARM2_DPI_RN ARM2_HI ARM2_ADD l, ; immediate
-: addls ARM2_DPI_RN ARM2_LS ARM2_ADD l, ; immediate
-: addge ARM2_DPI_RN ARM2_GE ARM2_ADD l, ; immediate
-: addlt ARM2_DPI_RN ARM2_LT ARM2_ADD l, ; immediate
-: addgt ARM2_DPI_RN ARM2_GT ARM2_ADD l, ; immediate
-: addle ARM2_DPI_RN ARM2_LE ARM2_ADD l, ; immediate
-: add ARM2_DPI_RN ARM2_AL ARM2_ADD l, ; immediate
+: addeq ARM2_DPI_RD_RN ARM2_EQ ARM2_ADD l, ; immediate
+: addne ARM2_DPI_RD_RN ARM2_NE ARM2_ADD l, ; immediate
+: addcs ARM2_DPI_RD_RN ARM2_CS ARM2_ADD l, ; immediate
+: addcc ARM2_DPI_RD_RN ARM2_CC ARM2_ADD l, ; immediate
+: addmi ARM2_DPI_RD_RN ARM2_MI ARM2_ADD l, ; immediate
+: addpl ARM2_DPI_RD_RN ARM2_PL ARM2_ADD l, ; immediate
+: addvs ARM2_DPI_RD_RN ARM2_VS ARM2_ADD l, ; immediate
+: addvc ARM2_DPI_RD_RN ARM2_VC ARM2_ADD l, ; immediate
+: addhi ARM2_DPI_RD_RN ARM2_HI ARM2_ADD l, ; immediate
+: addls ARM2_DPI_RD_RN ARM2_LS ARM2_ADD l, ; immediate
+: addge ARM2_DPI_RD_RN ARM2_GE ARM2_ADD l, ; immediate
+: addlt ARM2_DPI_RD_RN ARM2_LT ARM2_ADD l, ; immediate
+: addgt ARM2_DPI_RD_RN ARM2_GT ARM2_ADD l, ; immediate
+: addle ARM2_DPI_RD_RN ARM2_LE ARM2_ADD l, ; immediate
+: add ARM2_DPI_RD_RN ARM2_AL ARM2_ADD l, ; immediate
 
-: adceq ARM2_DPI_RN ARM2_EQ ARM2_ADC l, ; immediate
-: adcne ARM2_DPI_RN ARM2_NE ARM2_ADC l, ; immediate
-: adccs ARM2_DPI_RN ARM2_CS ARM2_ADC l, ; immediate
-: adccc ARM2_DPI_RN ARM2_CC ARM2_ADC l, ; immediate
-: adcmi ARM2_DPI_RN ARM2_MI ARM2_ADC l, ; immediate
-: adcpl ARM2_DPI_RN ARM2_PL ARM2_ADC l, ; immediate
-: adcvs ARM2_DPI_RN ARM2_VS ARM2_ADC l, ; immediate
-: adcvc ARM2_DPI_RN ARM2_VC ARM2_ADC l, ; immediate
-: adchi ARM2_DPI_RN ARM2_HI ARM2_ADC l, ; immediate
-: adcls ARM2_DPI_RN ARM2_LS ARM2_ADC l, ; immediate
-: adcge ARM2_DPI_RN ARM2_GE ARM2_ADC l, ; immediate
-: adclt ARM2_DPI_RN ARM2_LT ARM2_ADC l, ; immediate
-: adcgt ARM2_DPI_RN ARM2_GT ARM2_ADC l, ; immediate
-: adcle ARM2_DPI_RN ARM2_LE ARM2_ADC l, ; immediate
-: adc ARM2_DPI_RN ARM2_AL ARM2_ADC l, ; immediate
+: adceq ARM2_DPI_RD_RN ARM2_EQ ARM2_ADC l, ; immediate
+: adcne ARM2_DPI_RD_RN ARM2_NE ARM2_ADC l, ; immediate
+: adccs ARM2_DPI_RD_RN ARM2_CS ARM2_ADC l, ; immediate
+: adccc ARM2_DPI_RD_RN ARM2_CC ARM2_ADC l, ; immediate
+: adcmi ARM2_DPI_RD_RN ARM2_MI ARM2_ADC l, ; immediate
+: adcpl ARM2_DPI_RD_RN ARM2_PL ARM2_ADC l, ; immediate
+: adcvs ARM2_DPI_RD_RN ARM2_VS ARM2_ADC l, ; immediate
+: adcvc ARM2_DPI_RD_RN ARM2_VC ARM2_ADC l, ; immediate
+: adchi ARM2_DPI_RD_RN ARM2_HI ARM2_ADC l, ; immediate
+: adcls ARM2_DPI_RD_RN ARM2_LS ARM2_ADC l, ; immediate
+: adcge ARM2_DPI_RD_RN ARM2_GE ARM2_ADC l, ; immediate
+: adclt ARM2_DPI_RD_RN ARM2_LT ARM2_ADC l, ; immediate
+: adcgt ARM2_DPI_RD_RN ARM2_GT ARM2_ADC l, ; immediate
+: adcle ARM2_DPI_RD_RN ARM2_LE ARM2_ADC l, ; immediate
+: adc ARM2_DPI_RD_RN ARM2_AL ARM2_ADC l, ; immediate
 
-: rsbeq ARM2_DPI_RN ARM2_EQ ARM2_RSB l, ; immediate
-: rsbne ARM2_DPI_RN ARM2_NE ARM2_RSB l, ; immediate
-: rsbcs ARM2_DPI_RN ARM2_CS ARM2_RSB l, ; immediate
-: rsbcc ARM2_DPI_RN ARM2_CC ARM2_RSB l, ; immediate
-: rsbmi ARM2_DPI_RN ARM2_MI ARM2_RSB l, ; immediate
-: rsbpl ARM2_DPI_RN ARM2_PL ARM2_RSB l, ; immediate
-: rsbvs ARM2_DPI_RN ARM2_VS ARM2_RSB l, ; immediate
-: rsbvc ARM2_DPI_RN ARM2_VC ARM2_RSB l, ; immediate
-: rsbhi ARM2_DPI_RN ARM2_HI ARM2_RSB l, ; immediate
-: rsbls ARM2_DPI_RN ARM2_LS ARM2_RSB l, ; immediate
-: rsbge ARM2_DPI_RN ARM2_GE ARM2_RSB l, ; immediate
-: rsblt ARM2_DPI_RN ARM2_LT ARM2_RSB l, ; immediate
-: rsbgt ARM2_DPI_RN ARM2_GT ARM2_RSB l, ; immediate
-: rsble ARM2_DPI_RN ARM2_LE ARM2_RSB l, ; immediate
-: rsb ARM2_DPI_RN ARM2_AL ARM2_RSB l, ; immediate
+: rsbeq ARM2_DPI_RD_RN ARM2_EQ ARM2_RSB l, ; immediate
+: rsbne ARM2_DPI_RD_RN ARM2_NE ARM2_RSB l, ; immediate
+: rsbcs ARM2_DPI_RD_RN ARM2_CS ARM2_RSB l, ; immediate
+: rsbcc ARM2_DPI_RD_RN ARM2_CC ARM2_RSB l, ; immediate
+: rsbmi ARM2_DPI_RD_RN ARM2_MI ARM2_RSB l, ; immediate
+: rsbpl ARM2_DPI_RD_RN ARM2_PL ARM2_RSB l, ; immediate
+: rsbvs ARM2_DPI_RD_RN ARM2_VS ARM2_RSB l, ; immediate
+: rsbvc ARM2_DPI_RD_RN ARM2_VC ARM2_RSB l, ; immediate
+: rsbhi ARM2_DPI_RD_RN ARM2_HI ARM2_RSB l, ; immediate
+: rsbls ARM2_DPI_RD_RN ARM2_LS ARM2_RSB l, ; immediate
+: rsbge ARM2_DPI_RD_RN ARM2_GE ARM2_RSB l, ; immediate
+: rsblt ARM2_DPI_RD_RN ARM2_LT ARM2_RSB l, ; immediate
+: rsbgt ARM2_DPI_RD_RN ARM2_GT ARM2_RSB l, ; immediate
+: rsble ARM2_DPI_RD_RN ARM2_LE ARM2_RSB l, ; immediate
+: rsb ARM2_DPI_RD_RN ARM2_AL ARM2_RSB l, ; immediate
 
-: rsceq ARM2_DPI_RN ARM2_EQ ARM2_RSC l, ; immediate
-: rscne ARM2_DPI_RN ARM2_NE ARM2_RSC l, ; immediate
-: rsccs ARM2_DPI_RN ARM2_CS ARM2_RSC l, ; immediate
-: rsccc ARM2_DPI_RN ARM2_CC ARM2_RSC l, ; immediate
-: rscmi ARM2_DPI_RN ARM2_MI ARM2_RSC l, ; immediate
-: rscpl ARM2_DPI_RN ARM2_PL ARM2_RSC l, ; immediate
-: rscvs ARM2_DPI_RN ARM2_VS ARM2_RSC l, ; immediate
-: rscvc ARM2_DPI_RN ARM2_VC ARM2_RSC l, ; immediate
-: rschi ARM2_DPI_RN ARM2_HI ARM2_RSC l, ; immediate
-: rscls ARM2_DPI_RN ARM2_LS ARM2_RSC l, ; immediate
-: rscge ARM2_DPI_RN ARM2_GE ARM2_RSC l, ; immediate
-: rsclt ARM2_DPI_RN ARM2_LT ARM2_RSC l, ; immediate
-: rscgt ARM2_DPI_RN ARM2_GT ARM2_RSC l, ; immediate
-: rscle ARM2_DPI_RN ARM2_LE ARM2_RSC l, ; immediate
-: rsc ARM2_DPI_RN ARM2_AL ARM2_RSC l, ; immediate
+: rsceq ARM2_DPI_RD_RN ARM2_EQ ARM2_RSC l, ; immediate
+: rscne ARM2_DPI_RD_RN ARM2_NE ARM2_RSC l, ; immediate
+: rsccs ARM2_DPI_RD_RN ARM2_CS ARM2_RSC l, ; immediate
+: rsccc ARM2_DPI_RD_RN ARM2_CC ARM2_RSC l, ; immediate
+: rscmi ARM2_DPI_RD_RN ARM2_MI ARM2_RSC l, ; immediate
+: rscpl ARM2_DPI_RD_RN ARM2_PL ARM2_RSC l, ; immediate
+: rscvs ARM2_DPI_RD_RN ARM2_VS ARM2_RSC l, ; immediate
+: rscvc ARM2_DPI_RD_RN ARM2_VC ARM2_RSC l, ; immediate
+: rschi ARM2_DPI_RD_RN ARM2_HI ARM2_RSC l, ; immediate
+: rscls ARM2_DPI_RD_RN ARM2_LS ARM2_RSC l, ; immediate
+: rscge ARM2_DPI_RD_RN ARM2_GE ARM2_RSC l, ; immediate
+: rsclt ARM2_DPI_RD_RN ARM2_LT ARM2_RSC l, ; immediate
+: rscgt ARM2_DPI_RD_RN ARM2_GT ARM2_RSC l, ; immediate
+: rscle ARM2_DPI_RD_RN ARM2_LE ARM2_RSC l, ; immediate
+: rsc ARM2_DPI_RD_RN ARM2_AL ARM2_RSC l, ; immediate
 
-: sbceq ARM2_DPI_RN ARM2_EQ ARM2_SBC l, ; immediate
-: sbcne ARM2_DPI_RN ARM2_NE ARM2_SBC l, ; immediate
-: sbccs ARM2_DPI_RN ARM2_CS ARM2_SBC l, ; immediate
-: sbccc ARM2_DPI_RN ARM2_CC ARM2_SBC l, ; immediate
-: sbcmi ARM2_DPI_RN ARM2_MI ARM2_SBC l, ; immediate
-: sbcpl ARM2_DPI_RN ARM2_PL ARM2_SBC l, ; immediate
-: sbcvs ARM2_DPI_RN ARM2_VS ARM2_SBC l, ; immediate
-: sbcvc ARM2_DPI_RN ARM2_VC ARM2_SBC l, ; immediate
-: sbchi ARM2_DPI_RN ARM2_HI ARM2_SBC l, ; immediate
-: sbcls ARM2_DPI_RN ARM2_LS ARM2_SBC l, ; immediate
-: sbcge ARM2_DPI_RN ARM2_GE ARM2_SBC l, ; immediate
-: sbclt ARM2_DPI_RN ARM2_LT ARM2_SBC l, ; immediate
-: sbcgt ARM2_DPI_RN ARM2_GT ARM2_SBC l, ; immediate
-: sbcle ARM2_DPI_RN ARM2_LE ARM2_SBC l, ; immediate
-: sbc ARM2_DPI_RN ARM2_AL ARM2_SBC l, ; immediate
+: sbceq ARM2_DPI_RD_RN ARM2_EQ ARM2_SBC l, ; immediate
+: sbcne ARM2_DPI_RD_RN ARM2_NE ARM2_SBC l, ; immediate
+: sbccs ARM2_DPI_RD_RN ARM2_CS ARM2_SBC l, ; immediate
+: sbccc ARM2_DPI_RD_RN ARM2_CC ARM2_SBC l, ; immediate
+: sbcmi ARM2_DPI_RD_RN ARM2_MI ARM2_SBC l, ; immediate
+: sbcpl ARM2_DPI_RD_RN ARM2_PL ARM2_SBC l, ; immediate
+: sbcvs ARM2_DPI_RD_RN ARM2_VS ARM2_SBC l, ; immediate
+: sbcvc ARM2_DPI_RD_RN ARM2_VC ARM2_SBC l, ; immediate
+: sbchi ARM2_DPI_RD_RN ARM2_HI ARM2_SBC l, ; immediate
+: sbcls ARM2_DPI_RD_RN ARM2_LS ARM2_SBC l, ; immediate
+: sbcge ARM2_DPI_RD_RN ARM2_GE ARM2_SBC l, ; immediate
+: sbclt ARM2_DPI_RD_RN ARM2_LT ARM2_SBC l, ; immediate
+: sbcgt ARM2_DPI_RD_RN ARM2_GT ARM2_SBC l, ; immediate
+: sbcle ARM2_DPI_RD_RN ARM2_LE ARM2_SBC l, ; immediate
+: sbc ARM2_DPI_RD_RN ARM2_AL ARM2_SBC l, ; immediate
 
-: subeq ARM2_DPI_RN ARM2_EQ ARM2_SUB l, ; immediate
-: subne ARM2_DPI_RN ARM2_NE ARM2_SUB l, ; immediate
-: subcs ARM2_DPI_RN ARM2_CS ARM2_SUB l, ; immediate
-: subcc ARM2_DPI_RN ARM2_CC ARM2_SUB l, ; immediate
-: submi ARM2_DPI_RN ARM2_MI ARM2_SUB l, ; immediate
-: subpl ARM2_DPI_RN ARM2_PL ARM2_SUB l, ; immediate
-: subvs ARM2_DPI_RN ARM2_VS ARM2_SUB l, ; immediate
-: subvc ARM2_DPI_RN ARM2_VC ARM2_SUB l, ; immediate
-: subhi ARM2_DPI_RN ARM2_HI ARM2_SUB l, ; immediate
-: subls ARM2_DPI_RN ARM2_LS ARM2_SUB l, ; immediate
-: subge ARM2_DPI_RN ARM2_GE ARM2_SUB l, ; immediate
-: sublt ARM2_DPI_RN ARM2_LT ARM2_SUB l, ; immediate
-: subgt ARM2_DPI_RN ARM2_GT ARM2_SUB l, ; immediate
-: suble ARM2_DPI_RN ARM2_LE ARM2_SUB l, ; immediate
-: sub ARM2_DPI_RN ARM2_AL ARM2_SUB l, ; immediate
+: subeq ARM2_DPI_RD_RN ARM2_EQ ARM2_SUB l, ; immediate
+: subne ARM2_DPI_RD_RN ARM2_NE ARM2_SUB l, ; immediate
+: subcs ARM2_DPI_RD_RN ARM2_CS ARM2_SUB l, ; immediate
+: subcc ARM2_DPI_RD_RN ARM2_CC ARM2_SUB l, ; immediate
+: submi ARM2_DPI_RD_RN ARM2_MI ARM2_SUB l, ; immediate
+: subpl ARM2_DPI_RD_RN ARM2_PL ARM2_SUB l, ; immediate
+: subvs ARM2_DPI_RD_RN ARM2_VS ARM2_SUB l, ; immediate
+: subvc ARM2_DPI_RD_RN ARM2_VC ARM2_SUB l, ; immediate
+: subhi ARM2_DPI_RD_RN ARM2_HI ARM2_SUB l, ; immediate
+: subls ARM2_DPI_RD_RN ARM2_LS ARM2_SUB l, ; immediate
+: subge ARM2_DPI_RD_RN ARM2_GE ARM2_SUB l, ; immediate
+: sublt ARM2_DPI_RD_RN ARM2_LT ARM2_SUB l, ; immediate
+: subgt ARM2_DPI_RD_RN ARM2_GT ARM2_SUB l, ; immediate
+: suble ARM2_DPI_RD_RN ARM2_LE ARM2_SUB l, ; immediate
+: sub ARM2_DPI_RD_RN ARM2_AL ARM2_SUB l, ; immediate
 \ ------------------- DATA PROCESSING + S
-: moveqs ARM2_DPI ARM2_S ARM2_EQ ARM2_MOV l, ; immediate
-: movnes ARM2_DPI ARM2_S ARM2_NE ARM2_MOV l, ; immediate
-: movcss ARM2_DPI ARM2_S ARM2_CS ARM2_MOV l, ; immediate
-: movccs ARM2_DPI ARM2_S ARM2_CC ARM2_MOV l, ; immediate
-: movmis ARM2_DPI ARM2_S ARM2_MI ARM2_MOV l, ; immediate
-: movpls ARM2_DPI ARM2_S ARM2_PL ARM2_MOV l, ; immediate
-: movvss ARM2_DPI ARM2_S ARM2_VS ARM2_MOV l, ; immediate
-: movvcs ARM2_DPI ARM2_S ARM2_VC ARM2_MOV l, ; immediate
-: movhis ARM2_DPI ARM2_S ARM2_HI ARM2_MOV l, ; immediate
-: movlss ARM2_DPI ARM2_S ARM2_LS ARM2_MOV l, ; immediate
-: movges ARM2_DPI ARM2_S ARM2_GE ARM2_MOV l, ; immediate
-: movlts ARM2_DPI ARM2_S ARM2_LT ARM2_MOV l, ; immediate
-: movgts ARM2_DPI ARM2_S ARM2_GT ARM2_MOV l, ; immediate
-: movles ARM2_DPI ARM2_S ARM2_LE ARM2_MOV l, ; immediate
-: movs ARM2_DPI ARM2_S ARM2_AL ARM2_MOV l, ; immediate
+: moveqs ARM2_DPI_RD ARM2_S ARM2_EQ ARM2_MOV l, ; immediate
+: movnes ARM2_DPI_RD ARM2_S ARM2_NE ARM2_MOV l, ; immediate
+: movcss ARM2_DPI_RD ARM2_S ARM2_CS ARM2_MOV l, ; immediate
+: movccs ARM2_DPI_RD ARM2_S ARM2_CC ARM2_MOV l, ; immediate
+: movmis ARM2_DPI_RD ARM2_S ARM2_MI ARM2_MOV l, ; immediate
+: movpls ARM2_DPI_RD ARM2_S ARM2_PL ARM2_MOV l, ; immediate
+: movvss ARM2_DPI_RD ARM2_S ARM2_VS ARM2_MOV l, ; immediate
+: movvcs ARM2_DPI_RD ARM2_S ARM2_VC ARM2_MOV l, ; immediate
+: movhis ARM2_DPI_RD ARM2_S ARM2_HI ARM2_MOV l, ; immediate
+: movlss ARM2_DPI_RD ARM2_S ARM2_LS ARM2_MOV l, ; immediate
+: movges ARM2_DPI_RD ARM2_S ARM2_GE ARM2_MOV l, ; immediate
+: movlts ARM2_DPI_RD ARM2_S ARM2_LT ARM2_MOV l, ; immediate
+: movgts ARM2_DPI_RD ARM2_S ARM2_GT ARM2_MOV l, ; immediate
+: movles ARM2_DPI_RD ARM2_S ARM2_LE ARM2_MOV l, ; immediate
+: movs ARM2_DPI_RD ARM2_S ARM2_AL ARM2_MOV l, ; immediate
 
-: teqeq ARM2_DPI ARM2_S ARM2_EQ ARM2_TEQ l, ; immediate
-: teqne ARM2_DPI ARM2_S ARM2_NE ARM2_TEQ l, ; immediate
-: teqcs ARM2_DPI ARM2_S ARM2_CS ARM2_TEQ l, ; immediate
-: teqcc ARM2_DPI ARM2_S ARM2_CC ARM2_TEQ l, ; immediate
-: teqmi ARM2_DPI ARM2_S ARM2_MI ARM2_TEQ l, ; immediate
-: teqpl ARM2_DPI ARM2_S ARM2_PL ARM2_TEQ l, ; immediate
-: teqvs ARM2_DPI ARM2_S ARM2_VS ARM2_TEQ l, ; immediate
-: teqvc ARM2_DPI ARM2_S ARM2_VC ARM2_TEQ l, ; immediate
-: teqhi ARM2_DPI ARM2_S ARM2_HI ARM2_TEQ l, ; immediate
-: teqls ARM2_DPI ARM2_S ARM2_LS ARM2_TEQ l, ; immediate
-: teqge ARM2_DPI ARM2_S ARM2_GE ARM2_TEQ l, ; immediate
-: teqlt ARM2_DPI ARM2_S ARM2_LT ARM2_TEQ l, ; immediate
-: teqgt ARM2_DPI ARM2_S ARM2_GT ARM2_TEQ l, ; immediate
-: teqle ARM2_DPI ARM2_S ARM2_LE ARM2_TEQ l, ; immediate
-: teq ARM2_DPI ARM2_S ARM2_AL ARM2_TEQ l, ; immediate
+: teqeq ARM2_DPI_RN ARM2_S ARM2_EQ ARM2_TEQ l, ; immediate
+: teqne ARM2_DPI_RN ARM2_S ARM2_NE ARM2_TEQ l, ; immediate
+: teqcs ARM2_DPI_RN ARM2_S ARM2_CS ARM2_TEQ l, ; immediate
+: teqcc ARM2_DPI_RN ARM2_S ARM2_CC ARM2_TEQ l, ; immediate
+: teqmi ARM2_DPI_RN ARM2_S ARM2_MI ARM2_TEQ l, ; immediate
+: teqpl ARM2_DPI_RN ARM2_S ARM2_PL ARM2_TEQ l, ; immediate
+: teqvs ARM2_DPI_RN ARM2_S ARM2_VS ARM2_TEQ l, ; immediate
+: teqvc ARM2_DPI_RN ARM2_S ARM2_VC ARM2_TEQ l, ; immediate
+: teqhi ARM2_DPI_RN ARM2_S ARM2_HI ARM2_TEQ l, ; immediate
+: teqls ARM2_DPI_RN ARM2_S ARM2_LS ARM2_TEQ l, ; immediate
+: teqge ARM2_DPI_RN ARM2_S ARM2_GE ARM2_TEQ l, ; immediate
+: teqlt ARM2_DPI_RN ARM2_S ARM2_LT ARM2_TEQ l, ; immediate
+: teqgt ARM2_DPI_RN ARM2_S ARM2_GT ARM2_TEQ l, ; immediate
+: teqle ARM2_DPI_RN ARM2_S ARM2_LE ARM2_TEQ l, ; immediate
+: teq ARM2_DPI_RN ARM2_S ARM2_AL ARM2_TEQ l, ; immediate
 
-: tsteq ARM2_DPI ARM2_S ARM2_EQ ARM2_TST l, ; immediate
-: tstne ARM2_DPI ARM2_S ARM2_NE ARM2_TST l, ; immediate
-: tstcs ARM2_DPI ARM2_S ARM2_CS ARM2_TST l, ; immediate
-: tstcc ARM2_DPI ARM2_S ARM2_CC ARM2_TST l, ; immediate
-: tstmi ARM2_DPI ARM2_S ARM2_MI ARM2_TST l, ; immediate
-: tstpl ARM2_DPI ARM2_S ARM2_PL ARM2_TST l, ; immediate
-: tstvs ARM2_DPI ARM2_S ARM2_VS ARM2_TST l, ; immediate
-: tstvc ARM2_DPI ARM2_S ARM2_VC ARM2_TST l, ; immediate
-: tsthi ARM2_DPI ARM2_S ARM2_HI ARM2_TST l, ; immediate
-: tstls ARM2_DPI ARM2_S ARM2_LS ARM2_TST l, ; immediate
-: tstge ARM2_DPI ARM2_S ARM2_GE ARM2_TST l, ; immediate
-: tstlt ARM2_DPI ARM2_S ARM2_LT ARM2_TST l, ; immediate
-: tstgt ARM2_DPI ARM2_S ARM2_GT ARM2_TST l, ; immediate
-: tstle ARM2_DPI ARM2_S ARM2_LE ARM2_TST l, ; immediate
-: tst ARM2_DPI ARM2_S ARM2_AL ARM2_TST l, ; immediate
+: tsteq ARM2_DPI_RN ARM2_S ARM2_EQ ARM2_TST l, ; immediate
+: tstne ARM2_DPI_RN ARM2_S ARM2_NE ARM2_TST l, ; immediate
+: tstcs ARM2_DPI_RN ARM2_S ARM2_CS ARM2_TST l, ; immediate
+: tstcc ARM2_DPI_RN ARM2_S ARM2_CC ARM2_TST l, ; immediate
+: tstmi ARM2_DPI_RN ARM2_S ARM2_MI ARM2_TST l, ; immediate
+: tstpl ARM2_DPI_RN ARM2_S ARM2_PL ARM2_TST l, ; immediate
+: tstvs ARM2_DPI_RN ARM2_S ARM2_VS ARM2_TST l, ; immediate
+: tstvc ARM2_DPI_RN ARM2_S ARM2_VC ARM2_TST l, ; immediate
+: tsthi ARM2_DPI_RN ARM2_S ARM2_HI ARM2_TST l, ; immediate
+: tstls ARM2_DPI_RN ARM2_S ARM2_LS ARM2_TST l, ; immediate
+: tstge ARM2_DPI_RN ARM2_S ARM2_GE ARM2_TST l, ; immediate
+: tstlt ARM2_DPI_RN ARM2_S ARM2_LT ARM2_TST l, ; immediate
+: tstgt ARM2_DPI_RN ARM2_S ARM2_GT ARM2_TST l, ; immediate
+: tstle ARM2_DPI_RN ARM2_S ARM2_LE ARM2_TST l, ; immediate
+: tst ARM2_DPI_RN ARM2_S ARM2_AL ARM2_TST l, ; immediate
 
-: cmneq ARM2_DPI ARM2_S ARM2_EQ ARM2_CMN l, ; immediate
-: cmnne ARM2_DPI ARM2_S ARM2_NE ARM2_CMN l, ; immediate
-: cmncs ARM2_DPI ARM2_S ARM2_CS ARM2_CMN l, ; immediate
-: cmncc ARM2_DPI ARM2_S ARM2_CC ARM2_CMN l, ; immediate
-: cmnmi ARM2_DPI ARM2_S ARM2_MI ARM2_CMN l, ; immediate
-: cmnpl ARM2_DPI ARM2_S ARM2_PL ARM2_CMN l, ; immediate
-: cmnvs ARM2_DPI ARM2_S ARM2_VS ARM2_CMN l, ; immediate
-: cmnvc ARM2_DPI ARM2_S ARM2_VC ARM2_CMN l, ; immediate
-: cmnhi ARM2_DPI ARM2_S ARM2_HI ARM2_CMN l, ; immediate
-: cmnls ARM2_DPI ARM2_S ARM2_LS ARM2_CMN l, ; immediate
-: cmnge ARM2_DPI ARM2_S ARM2_GE ARM2_CMN l, ; immediate
-: cmnlt ARM2_DPI ARM2_S ARM2_LT ARM2_CMN l, ; immediate
-: cmngt ARM2_DPI ARM2_S ARM2_GT ARM2_CMN l, ; immediate
-: cmnle ARM2_DPI ARM2_S ARM2_LE ARM2_CMN l, ; immediate
-: cmn ARM2_DPI ARM2_S ARM2_AL ARM2_CMN l, ; immediate
+: cmneq ARM2_DPI_RN ARM2_S ARM2_EQ ARM2_CMN l, ; immediate
+: cmnne ARM2_DPI_RN ARM2_S ARM2_NE ARM2_CMN l, ; immediate
+: cmncs ARM2_DPI_RN ARM2_S ARM2_CS ARM2_CMN l, ; immediate
+: cmncc ARM2_DPI_RN ARM2_S ARM2_CC ARM2_CMN l, ; immediate
+: cmnmi ARM2_DPI_RN ARM2_S ARM2_MI ARM2_CMN l, ; immediate
+: cmnpl ARM2_DPI_RN ARM2_S ARM2_PL ARM2_CMN l, ; immediate
+: cmnvs ARM2_DPI_RN ARM2_S ARM2_VS ARM2_CMN l, ; immediate
+: cmnvc ARM2_DPI_RN ARM2_S ARM2_VC ARM2_CMN l, ; immediate
+: cmnhi ARM2_DPI_RN ARM2_S ARM2_HI ARM2_CMN l, ; immediate
+: cmnls ARM2_DPI_RN ARM2_S ARM2_LS ARM2_CMN l, ; immediate
+: cmnge ARM2_DPI_RN ARM2_S ARM2_GE ARM2_CMN l, ; immediate
+: cmnlt ARM2_DPI_RN ARM2_S ARM2_LT ARM2_CMN l, ; immediate
+: cmngt ARM2_DPI_RN ARM2_S ARM2_GT ARM2_CMN l, ; immediate
+: cmnle ARM2_DPI_RN ARM2_S ARM2_LE ARM2_CMN l, ; immediate
+: cmn ARM2_DPI_RN ARM2_S ARM2_AL ARM2_CMN l, ; immediate
 
-: cmpeq ARM2_DPI ARM2_S ARM2_EQ ARM2_CMP l, ; immediate
-: cmpne ARM2_DPI ARM2_S ARM2_NE ARM2_CMP l, ; immediate
-: cmpcs ARM2_DPI ARM2_S ARM2_CS ARM2_CMP l, ; immediate
-: cmpcc ARM2_DPI ARM2_S ARM2_CC ARM2_CMP l, ; immediate
-: cmpmi ARM2_DPI ARM2_S ARM2_MI ARM2_CMP l, ; immediate
-: cmppl ARM2_DPI ARM2_S ARM2_PL ARM2_CMP l, ; immediate
-: cmpvs ARM2_DPI ARM2_S ARM2_VS ARM2_CMP l, ; immediate
-: cmpvc ARM2_DPI ARM2_S ARM2_VC ARM2_CMP l, ; immediate
-: cmphi ARM2_DPI ARM2_S ARM2_HI ARM2_CMP l, ; immediate
-: cmpls ARM2_DPI ARM2_S ARM2_LS ARM2_CMP l, ; immediate
-: cmpge ARM2_DPI ARM2_S ARM2_GE ARM2_CMP l, ; immediate
-: cmplt ARM2_DPI ARM2_S ARM2_LT ARM2_CMP l, ; immediate
-: cmpgt ARM2_DPI ARM2_S ARM2_GT ARM2_CMP l, ; immediate
-: cmple ARM2_DPI ARM2_S ARM2_LE ARM2_CMP l, ; immediate
-: cmp ARM2_DPI ARM2_S ARM2_AL ARM2_CMP l, ; immediate
+: cmpeq ARM2_DPI_RN ARM2_S ARM2_EQ ARM2_CMP l, ; immediate
+: cmpne ARM2_DPI_RN ARM2_S ARM2_NE ARM2_CMP l, ; immediate
+: cmpcs ARM2_DPI_RN ARM2_S ARM2_CS ARM2_CMP l, ; immediate
+: cmpcc ARM2_DPI_RN ARM2_S ARM2_CC ARM2_CMP l, ; immediate
+: cmpmi ARM2_DPI_RN ARM2_S ARM2_MI ARM2_CMP l, ; immediate
+: cmppl ARM2_DPI_RN ARM2_S ARM2_PL ARM2_CMP l, ; immediate
+: cmpvs ARM2_DPI_RN ARM2_S ARM2_VS ARM2_CMP l, ; immediate
+: cmpvc ARM2_DPI_RN ARM2_S ARM2_VC ARM2_CMP l, ; immediate
+: cmphi ARM2_DPI_RN ARM2_S ARM2_HI ARM2_CMP l, ; immediate
+: cmpls ARM2_DPI_RN ARM2_S ARM2_LS ARM2_CMP l, ; immediate
+: cmpge ARM2_DPI_RN ARM2_S ARM2_GE ARM2_CMP l, ; immediate
+: cmplt ARM2_DPI_RN ARM2_S ARM2_LT ARM2_CMP l, ; immediate
+: cmpgt ARM2_DPI_RN ARM2_S ARM2_GT ARM2_CMP l, ; immediate
+: cmple ARM2_DPI_RN ARM2_S ARM2_LE ARM2_CMP l, ; immediate
+: cmp ARM2_DPI_RN ARM2_S ARM2_AL ARM2_CMP l, ; immediate
 
-: mvneqs ARM2_DPI ARM2_S ARM2_EQ ARM2_MVN l, ; immediate
-: mvnnes ARM2_DPI ARM2_S ARM2_NE ARM2_MVN l, ; immediate
-: mvncss ARM2_DPI ARM2_S ARM2_CS ARM2_MVN l, ; immediate
-: mvnccs ARM2_DPI ARM2_S ARM2_CC ARM2_MVN l, ; immediate
-: mvnmis ARM2_DPI ARM2_S ARM2_MI ARM2_MVN l, ; immediate
-: mvnpls ARM2_DPI ARM2_S ARM2_PL ARM2_MVN l, ; immediate
-: mvnvss ARM2_DPI ARM2_S ARM2_VS ARM2_MVN l, ; immediate
-: mvnvcs ARM2_DPI ARM2_S ARM2_VC ARM2_MVN l, ; immediate
-: mvnhis ARM2_DPI ARM2_S ARM2_HI ARM2_MVN l, ; immediate
-: mvnlss ARM2_DPI ARM2_S ARM2_LS ARM2_MVN l, ; immediate
-: mvnges ARM2_DPI ARM2_S ARM2_GE ARM2_MVN l, ; immediate
-: mvnlts ARM2_DPI ARM2_S ARM2_LT ARM2_MVN l, ; immediate
-: mvngts ARM2_DPI ARM2_S ARM2_GT ARM2_MVN l, ; immediate
-: mvnles ARM2_DPI ARM2_S ARM2_LE ARM2_MVN l, ; immediate
-: mvns ARM2_DPI ARM2_S ARM2_AL ARM2_MVN l, ; immediate
+: mvneqs ARM2_DPI_RD ARM2_S ARM2_EQ ARM2_MVN l, ; immediate
+: mvnnes ARM2_DPI_RD ARM2_S ARM2_NE ARM2_MVN l, ; immediate
+: mvncss ARM2_DPI_RD ARM2_S ARM2_CS ARM2_MVN l, ; immediate
+: mvnccs ARM2_DPI_RD ARM2_S ARM2_CC ARM2_MVN l, ; immediate
+: mvnmis ARM2_DPI_RD ARM2_S ARM2_MI ARM2_MVN l, ; immediate
+: mvnpls ARM2_DPI_RD ARM2_S ARM2_PL ARM2_MVN l, ; immediate
+: mvnvss ARM2_DPI_RD ARM2_S ARM2_VS ARM2_MVN l, ; immediate
+: mvnvcs ARM2_DPI_RD ARM2_S ARM2_VC ARM2_MVN l, ; immediate
+: mvnhis ARM2_DPI_RD ARM2_S ARM2_HI ARM2_MVN l, ; immediate
+: mvnlss ARM2_DPI_RD ARM2_S ARM2_LS ARM2_MVN l, ; immediate
+: mvnges ARM2_DPI_RD ARM2_S ARM2_GE ARM2_MVN l, ; immediate
+: mvnlts ARM2_DPI_RD ARM2_S ARM2_LT ARM2_MVN l, ; immediate
+: mvngts ARM2_DPI_RD ARM2_S ARM2_GT ARM2_MVN l, ; immediate
+: mvnles ARM2_DPI_RD ARM2_S ARM2_LE ARM2_MVN l, ; immediate
+: mvns ARM2_DPI_RD ARM2_S ARM2_AL ARM2_MVN l, ; immediate
 
-: eoreqs ARM2_DPI_RN ARM2_S ARM2_EQ ARM2_EOR l, ; immediate
-: eornes ARM2_DPI_RN ARM2_S ARM2_NE ARM2_EOR l, ; immediate
-: eorcss ARM2_DPI_RN ARM2_S ARM2_CS ARM2_EOR l, ; immediate
-: eorccs ARM2_DPI_RN ARM2_S ARM2_CC ARM2_EOR l, ; immediate
-: eormis ARM2_DPI_RN ARM2_S ARM2_MI ARM2_EOR l, ; immediate
-: eorpls ARM2_DPI_RN ARM2_S ARM2_PL ARM2_EOR l, ; immediate
-: eorvss ARM2_DPI_RN ARM2_S ARM2_VS ARM2_EOR l, ; immediate
-: eorvcs ARM2_DPI_RN ARM2_S ARM2_VC ARM2_EOR l, ; immediate
-: eorhis ARM2_DPI_RN ARM2_S ARM2_HI ARM2_EOR l, ; immediate
-: eorlss ARM2_DPI_RN ARM2_S ARM2_LS ARM2_EOR l, ; immediate
-: eorges ARM2_DPI_RN ARM2_S ARM2_GE ARM2_EOR l, ; immediate
-: eorlts ARM2_DPI_RN ARM2_S ARM2_LT ARM2_EOR l, ; immediate
-: eorgts ARM2_DPI_RN ARM2_S ARM2_GT ARM2_EOR l, ; immediate
-: eorles ARM2_DPI_RN ARM2_S ARM2_LE ARM2_EOR l, ; immediate
-: eors ARM2_DPI_RN ARM2_S ARM2_AL ARM2_EOR l, ; immediate
+: eoreqs ARM2_DPI_RD_RN ARM2_S ARM2_EQ ARM2_EOR l, ; immediate
+: eornes ARM2_DPI_RD_RN ARM2_S ARM2_NE ARM2_EOR l, ; immediate
+: eorcss ARM2_DPI_RD_RN ARM2_S ARM2_CS ARM2_EOR l, ; immediate
+: eorccs ARM2_DPI_RD_RN ARM2_S ARM2_CC ARM2_EOR l, ; immediate
+: eormis ARM2_DPI_RD_RN ARM2_S ARM2_MI ARM2_EOR l, ; immediate
+: eorpls ARM2_DPI_RD_RN ARM2_S ARM2_PL ARM2_EOR l, ; immediate
+: eorvss ARM2_DPI_RD_RN ARM2_S ARM2_VS ARM2_EOR l, ; immediate
+: eorvcs ARM2_DPI_RD_RN ARM2_S ARM2_VC ARM2_EOR l, ; immediate
+: eorhis ARM2_DPI_RD_RN ARM2_S ARM2_HI ARM2_EOR l, ; immediate
+: eorlss ARM2_DPI_RD_RN ARM2_S ARM2_LS ARM2_EOR l, ; immediate
+: eorges ARM2_DPI_RD_RN ARM2_S ARM2_GE ARM2_EOR l, ; immediate
+: eorlts ARM2_DPI_RD_RN ARM2_S ARM2_LT ARM2_EOR l, ; immediate
+: eorgts ARM2_DPI_RD_RN ARM2_S ARM2_GT ARM2_EOR l, ; immediate
+: eorles ARM2_DPI_RD_RN ARM2_S ARM2_LE ARM2_EOR l, ; immediate
+: eors ARM2_DPI_RD_RN ARM2_S ARM2_AL ARM2_EOR l, ; immediate
 
-: orreqs ARM2_DPI_RN ARM2_S ARM2_EQ ARM2_ORR l, ; immediate
-: orrnes ARM2_DPI_RN ARM2_S ARM2_NE ARM2_ORR l, ; immediate
-: orrcss ARM2_DPI_RN ARM2_S ARM2_CS ARM2_ORR l, ; immediate
-: orrccs ARM2_DPI_RN ARM2_S ARM2_CC ARM2_ORR l, ; immediate
-: orrmis ARM2_DPI_RN ARM2_S ARM2_MI ARM2_ORR l, ; immediate
-: orrpls ARM2_DPI_RN ARM2_S ARM2_PL ARM2_ORR l, ; immediate
-: orrvss ARM2_DPI_RN ARM2_S ARM2_VS ARM2_ORR l, ; immediate
-: orrvcs ARM2_DPI_RN ARM2_S ARM2_VC ARM2_ORR l, ; immediate
-: orrhis ARM2_DPI_RN ARM2_S ARM2_HI ARM2_ORR l, ; immediate
-: orrlss ARM2_DPI_RN ARM2_S ARM2_LS ARM2_ORR l, ; immediate
-: orrges ARM2_DPI_RN ARM2_S ARM2_GE ARM2_ORR l, ; immediate
-: orrlts ARM2_DPI_RN ARM2_S ARM2_LT ARM2_ORR l, ; immediate
-: orrgts ARM2_DPI_RN ARM2_S ARM2_GT ARM2_ORR l, ; immediate
-: orrles ARM2_DPI_RN ARM2_S ARM2_LE ARM2_ORR l, ; immediate
-: orrs ARM2_DPI_RN ARM2_S ARM2_AL ARM2_ORR l, ; immediate
+: orreqs ARM2_DPI_RD_RN ARM2_S ARM2_EQ ARM2_ORR l, ; immediate
+: orrnes ARM2_DPI_RD_RN ARM2_S ARM2_NE ARM2_ORR l, ; immediate
+: orrcss ARM2_DPI_RD_RN ARM2_S ARM2_CS ARM2_ORR l, ; immediate
+: orrccs ARM2_DPI_RD_RN ARM2_S ARM2_CC ARM2_ORR l, ; immediate
+: orrmis ARM2_DPI_RD_RN ARM2_S ARM2_MI ARM2_ORR l, ; immediate
+: orrpls ARM2_DPI_RD_RN ARM2_S ARM2_PL ARM2_ORR l, ; immediate
+: orrvss ARM2_DPI_RD_RN ARM2_S ARM2_VS ARM2_ORR l, ; immediate
+: orrvcs ARM2_DPI_RD_RN ARM2_S ARM2_VC ARM2_ORR l, ; immediate
+: orrhis ARM2_DPI_RD_RN ARM2_S ARM2_HI ARM2_ORR l, ; immediate
+: orrlss ARM2_DPI_RD_RN ARM2_S ARM2_LS ARM2_ORR l, ; immediate
+: orrges ARM2_DPI_RD_RN ARM2_S ARM2_GE ARM2_ORR l, ; immediate
+: orrlts ARM2_DPI_RD_RN ARM2_S ARM2_LT ARM2_ORR l, ; immediate
+: orrgts ARM2_DPI_RD_RN ARM2_S ARM2_GT ARM2_ORR l, ; immediate
+: orrles ARM2_DPI_RD_RN ARM2_S ARM2_LE ARM2_ORR l, ; immediate
+: orrs ARM2_DPI_RD_RN ARM2_S ARM2_AL ARM2_ORR l, ; immediate
 
-: andeqs ARM2_DPI_RN ARM2_S ARM2_EQ ARM2_AND l, ; immediate
-: andnes ARM2_DPI_RN ARM2_S ARM2_NE ARM2_AND l, ; immediate
-: andcss ARM2_DPI_RN ARM2_S ARM2_CS ARM2_AND l, ; immediate
-: andccs ARM2_DPI_RN ARM2_S ARM2_CC ARM2_AND l, ; immediate
-: andmis ARM2_DPI_RN ARM2_S ARM2_MI ARM2_AND l, ; immediate
-: andpls ARM2_DPI_RN ARM2_S ARM2_PL ARM2_AND l, ; immediate
-: andvss ARM2_DPI_RN ARM2_S ARM2_VS ARM2_AND l, ; immediate
-: andvcs ARM2_DPI_RN ARM2_S ARM2_VC ARM2_AND l, ; immediate
-: andhis ARM2_DPI_RN ARM2_S ARM2_HI ARM2_AND l, ; immediate
-: andlss ARM2_DPI_RN ARM2_S ARM2_LS ARM2_AND l, ; immediate
-: andges ARM2_DPI_RN ARM2_S ARM2_GE ARM2_AND l, ; immediate
-: andlts ARM2_DPI_RN ARM2_S ARM2_LT ARM2_AND l, ; immediate
-: andgts ARM2_DPI_RN ARM2_S ARM2_GT ARM2_AND l, ; immediate
-: andles ARM2_DPI_RN ARM2_S ARM2_LE ARM2_AND l, ; immediate
-: ands ARM2_DPI_RN ARM2_S ARM2_AL ARM2_AND l, ; immediate
+: andeqs ARM2_DPI_RD_RN ARM2_S ARM2_EQ ARM2_AND l, ; immediate
+: andnes ARM2_DPI_RD_RN ARM2_S ARM2_NE ARM2_AND l, ; immediate
+: andcss ARM2_DPI_RD_RN ARM2_S ARM2_CS ARM2_AND l, ; immediate
+: andccs ARM2_DPI_RD_RN ARM2_S ARM2_CC ARM2_AND l, ; immediate
+: andmis ARM2_DPI_RD_RN ARM2_S ARM2_MI ARM2_AND l, ; immediate
+: andpls ARM2_DPI_RD_RN ARM2_S ARM2_PL ARM2_AND l, ; immediate
+: andvss ARM2_DPI_RD_RN ARM2_S ARM2_VS ARM2_AND l, ; immediate
+: andvcs ARM2_DPI_RD_RN ARM2_S ARM2_VC ARM2_AND l, ; immediate
+: andhis ARM2_DPI_RD_RN ARM2_S ARM2_HI ARM2_AND l, ; immediate
+: andlss ARM2_DPI_RD_RN ARM2_S ARM2_LS ARM2_AND l, ; immediate
+: andges ARM2_DPI_RD_RN ARM2_S ARM2_GE ARM2_AND l, ; immediate
+: andlts ARM2_DPI_RD_RN ARM2_S ARM2_LT ARM2_AND l, ; immediate
+: andgts ARM2_DPI_RD_RN ARM2_S ARM2_GT ARM2_AND l, ; immediate
+: andles ARM2_DPI_RD_RN ARM2_S ARM2_LE ARM2_AND l, ; immediate
+: ands ARM2_DPI_RD_RN ARM2_S ARM2_AL ARM2_AND l, ; immediate
 
-: biceqs ARM2_DPI_RN ARM2_S ARM2_EQ ARM2_BIC l, ; immediate
-: bicnes ARM2_DPI_RN ARM2_S ARM2_NE ARM2_BIC l, ; immediate
-: biccss ARM2_DPI_RN ARM2_S ARM2_CS ARM2_BIC l, ; immediate
-: bicccs ARM2_DPI_RN ARM2_S ARM2_CC ARM2_BIC l, ; immediate
-: bicmis ARM2_DPI_RN ARM2_S ARM2_MI ARM2_BIC l, ; immediate
-: bicpls ARM2_DPI_RN ARM2_S ARM2_PL ARM2_BIC l, ; immediate
-: bicvss ARM2_DPI_RN ARM2_S ARM2_VS ARM2_BIC l, ; immediate
-: bicvcs ARM2_DPI_RN ARM2_S ARM2_VC ARM2_BIC l, ; immediate
-: bichis ARM2_DPI_RN ARM2_S ARM2_HI ARM2_BIC l, ; immediate
-: biclss ARM2_DPI_RN ARM2_S ARM2_LS ARM2_BIC l, ; immediate
-: bicges ARM2_DPI_RN ARM2_S ARM2_GE ARM2_BIC l, ; immediate
-: biclts ARM2_DPI_RN ARM2_S ARM2_LT ARM2_BIC l, ; immediate
-: bicgts ARM2_DPI_RN ARM2_S ARM2_GT ARM2_BIC l, ; immediate
-: bicles ARM2_DPI_RN ARM2_S ARM2_LE ARM2_BIC l, ; immediate
-: bics ARM2_DPI_RN ARM2_S ARM2_AL ARM2_BIC l, ; immediate
+: biceqs ARM2_DPI_RD_RN ARM2_S ARM2_EQ ARM2_BIC l, ; immediate
+: bicnes ARM2_DPI_RD_RN ARM2_S ARM2_NE ARM2_BIC l, ; immediate
+: biccss ARM2_DPI_RD_RN ARM2_S ARM2_CS ARM2_BIC l, ; immediate
+: bicccs ARM2_DPI_RD_RN ARM2_S ARM2_CC ARM2_BIC l, ; immediate
+: bicmis ARM2_DPI_RD_RN ARM2_S ARM2_MI ARM2_BIC l, ; immediate
+: bicpls ARM2_DPI_RD_RN ARM2_S ARM2_PL ARM2_BIC l, ; immediate
+: bicvss ARM2_DPI_RD_RN ARM2_S ARM2_VS ARM2_BIC l, ; immediate
+: bicvcs ARM2_DPI_RD_RN ARM2_S ARM2_VC ARM2_BIC l, ; immediate
+: bichis ARM2_DPI_RD_RN ARM2_S ARM2_HI ARM2_BIC l, ; immediate
+: biclss ARM2_DPI_RD_RN ARM2_S ARM2_LS ARM2_BIC l, ; immediate
+: bicges ARM2_DPI_RD_RN ARM2_S ARM2_GE ARM2_BIC l, ; immediate
+: biclts ARM2_DPI_RD_RN ARM2_S ARM2_LT ARM2_BIC l, ; immediate
+: bicgts ARM2_DPI_RD_RN ARM2_S ARM2_GT ARM2_BIC l, ; immediate
+: bicles ARM2_DPI_RD_RN ARM2_S ARM2_LE ARM2_BIC l, ; immediate
+: bics ARM2_DPI_RD_RN ARM2_S ARM2_AL ARM2_BIC l, ; immediate
 
-: addeqs ARM2_DPI_RN ARM2_S ARM2_EQ ARM2_ADD l, ; immediate
-: addnes ARM2_DPI_RN ARM2_S ARM2_NE ARM2_ADD l, ; immediate
-: addcss ARM2_DPI_RN ARM2_S ARM2_CS ARM2_ADD l, ; immediate
-: addccs ARM2_DPI_RN ARM2_S ARM2_CC ARM2_ADD l, ; immediate
-: addmis ARM2_DPI_RN ARM2_S ARM2_MI ARM2_ADD l, ; immediate
-: addpls ARM2_DPI_RN ARM2_S ARM2_PL ARM2_ADD l, ; immediate
-: addvss ARM2_DPI_RN ARM2_S ARM2_VS ARM2_ADD l, ; immediate
-: addvcs ARM2_DPI_RN ARM2_S ARM2_VC ARM2_ADD l, ; immediate
-: addhis ARM2_DPI_RN ARM2_S ARM2_HI ARM2_ADD l, ; immediate
-: addlss ARM2_DPI_RN ARM2_S ARM2_LS ARM2_ADD l, ; immediate
-: addges ARM2_DPI_RN ARM2_S ARM2_GE ARM2_ADD l, ; immediate
-: addlts ARM2_DPI_RN ARM2_S ARM2_LT ARM2_ADD l, ; immediate
-: addgts ARM2_DPI_RN ARM2_S ARM2_GT ARM2_ADD l, ; immediate
-: addles ARM2_DPI_RN ARM2_S ARM2_LE ARM2_ADD l, ; immediate
-: adds ARM2_DPI_RN ARM2_S ARM2_AL ARM2_ADD l, ; immediate
+: addeqs ARM2_DPI_RD_RN ARM2_S ARM2_EQ ARM2_ADD l, ; immediate
+: addnes ARM2_DPI_RD_RN ARM2_S ARM2_NE ARM2_ADD l, ; immediate
+: addcss ARM2_DPI_RD_RN ARM2_S ARM2_CS ARM2_ADD l, ; immediate
+: addccs ARM2_DPI_RD_RN ARM2_S ARM2_CC ARM2_ADD l, ; immediate
+: addmis ARM2_DPI_RD_RN ARM2_S ARM2_MI ARM2_ADD l, ; immediate
+: addpls ARM2_DPI_RD_RN ARM2_S ARM2_PL ARM2_ADD l, ; immediate
+: addvss ARM2_DPI_RD_RN ARM2_S ARM2_VS ARM2_ADD l, ; immediate
+: addvcs ARM2_DPI_RD_RN ARM2_S ARM2_VC ARM2_ADD l, ; immediate
+: addhis ARM2_DPI_RD_RN ARM2_S ARM2_HI ARM2_ADD l, ; immediate
+: addlss ARM2_DPI_RD_RN ARM2_S ARM2_LS ARM2_ADD l, ; immediate
+: addges ARM2_DPI_RD_RN ARM2_S ARM2_GE ARM2_ADD l, ; immediate
+: addlts ARM2_DPI_RD_RN ARM2_S ARM2_LT ARM2_ADD l, ; immediate
+: addgts ARM2_DPI_RD_RN ARM2_S ARM2_GT ARM2_ADD l, ; immediate
+: addles ARM2_DPI_RD_RN ARM2_S ARM2_LE ARM2_ADD l, ; immediate
+: adds ARM2_DPI_RD_RN ARM2_S ARM2_AL ARM2_ADD l, ; immediate
 
-: adceqs ARM2_DPI_RN ARM2_S ARM2_EQ ARM2_ADC l, ; immediate
-: adcnes ARM2_DPI_RN ARM2_S ARM2_NE ARM2_ADC l, ; immediate
-: adccss ARM2_DPI_RN ARM2_S ARM2_CS ARM2_ADC l, ; immediate
-: adcccs ARM2_DPI_RN ARM2_S ARM2_CC ARM2_ADC l, ; immediate
-: adcmis ARM2_DPI_RN ARM2_S ARM2_MI ARM2_ADC l, ; immediate
-: adcpls ARM2_DPI_RN ARM2_S ARM2_PL ARM2_ADC l, ; immediate
-: adcvss ARM2_DPI_RN ARM2_S ARM2_VS ARM2_ADC l, ; immediate
-: adcvcs ARM2_DPI_RN ARM2_S ARM2_VC ARM2_ADC l, ; immediate
-: adchis ARM2_DPI_RN ARM2_S ARM2_HI ARM2_ADC l, ; immediate
-: adclss ARM2_DPI_RN ARM2_S ARM2_LS ARM2_ADC l, ; immediate
-: adcges ARM2_DPI_RN ARM2_S ARM2_GE ARM2_ADC l, ; immediate
-: adclts ARM2_DPI_RN ARM2_S ARM2_LT ARM2_ADC l, ; immediate
-: adcgts ARM2_DPI_RN ARM2_S ARM2_GT ARM2_ADC l, ; immediate
-: adcles ARM2_DPI_RN ARM2_S ARM2_LE ARM2_ADC l, ; immediate
-: adcs ARM2_DPI_RN ARM2_S ARM2_AL ARM2_ADC l, ; immediate
+: adceqs ARM2_DPI_RD_RN ARM2_S ARM2_EQ ARM2_ADC l, ; immediate
+: adcnes ARM2_DPI_RD_RN ARM2_S ARM2_NE ARM2_ADC l, ; immediate
+: adccss ARM2_DPI_RD_RN ARM2_S ARM2_CS ARM2_ADC l, ; immediate
+: adcccs ARM2_DPI_RD_RN ARM2_S ARM2_CC ARM2_ADC l, ; immediate
+: adcmis ARM2_DPI_RD_RN ARM2_S ARM2_MI ARM2_ADC l, ; immediate
+: adcpls ARM2_DPI_RD_RN ARM2_S ARM2_PL ARM2_ADC l, ; immediate
+: adcvss ARM2_DPI_RD_RN ARM2_S ARM2_VS ARM2_ADC l, ; immediate
+: adcvcs ARM2_DPI_RD_RN ARM2_S ARM2_VC ARM2_ADC l, ; immediate
+: adchis ARM2_DPI_RD_RN ARM2_S ARM2_HI ARM2_ADC l, ; immediate
+: adclss ARM2_DPI_RD_RN ARM2_S ARM2_LS ARM2_ADC l, ; immediate
+: adcges ARM2_DPI_RD_RN ARM2_S ARM2_GE ARM2_ADC l, ; immediate
+: adclts ARM2_DPI_RD_RN ARM2_S ARM2_LT ARM2_ADC l, ; immediate
+: adcgts ARM2_DPI_RD_RN ARM2_S ARM2_GT ARM2_ADC l, ; immediate
+: adcles ARM2_DPI_RD_RN ARM2_S ARM2_LE ARM2_ADC l, ; immediate
+: adcs ARM2_DPI_RD_RN ARM2_S ARM2_AL ARM2_ADC l, ; immediate
 
-: rsbeqs ARM2_DPI_RN ARM2_S ARM2_EQ ARM2_RSB l, ; immediate
-: rsbnes ARM2_DPI_RN ARM2_S ARM2_NE ARM2_RSB l, ; immediate
-: rsbcss ARM2_DPI_RN ARM2_S ARM2_CS ARM2_RSB l, ; immediate
-: rsbccs ARM2_DPI_RN ARM2_S ARM2_CC ARM2_RSB l, ; immediate
-: rsbmis ARM2_DPI_RN ARM2_S ARM2_MI ARM2_RSB l, ; immediate
-: rsbpls ARM2_DPI_RN ARM2_S ARM2_PL ARM2_RSB l, ; immediate
-: rsbvss ARM2_DPI_RN ARM2_S ARM2_VS ARM2_RSB l, ; immediate
-: rsbvcs ARM2_DPI_RN ARM2_S ARM2_VC ARM2_RSB l, ; immediate
-: rsbhis ARM2_DPI_RN ARM2_S ARM2_HI ARM2_RSB l, ; immediate
-: rsblss ARM2_DPI_RN ARM2_S ARM2_LS ARM2_RSB l, ; immediate
-: rsbges ARM2_DPI_RN ARM2_S ARM2_GE ARM2_RSB l, ; immediate
-: rsblts ARM2_DPI_RN ARM2_S ARM2_LT ARM2_RSB l, ; immediate
-: rsbgts ARM2_DPI_RN ARM2_S ARM2_GT ARM2_RSB l, ; immediate
-: rsbles ARM2_DPI_RN ARM2_S ARM2_LE ARM2_RSB l, ; immediate
-: rsbs ARM2_DPI_RN ARM2_S ARM2_AL ARM2_RSB l, ; immediate
+: rsbeqs ARM2_DPI_RD_RN ARM2_S ARM2_EQ ARM2_RSB l, ; immediate
+: rsbnes ARM2_DPI_RD_RN ARM2_S ARM2_NE ARM2_RSB l, ; immediate
+: rsbcss ARM2_DPI_RD_RN ARM2_S ARM2_CS ARM2_RSB l, ; immediate
+: rsbccs ARM2_DPI_RD_RN ARM2_S ARM2_CC ARM2_RSB l, ; immediate
+: rsbmis ARM2_DPI_RD_RN ARM2_S ARM2_MI ARM2_RSB l, ; immediate
+: rsbpls ARM2_DPI_RD_RN ARM2_S ARM2_PL ARM2_RSB l, ; immediate
+: rsbvss ARM2_DPI_RD_RN ARM2_S ARM2_VS ARM2_RSB l, ; immediate
+: rsbvcs ARM2_DPI_RD_RN ARM2_S ARM2_VC ARM2_RSB l, ; immediate
+: rsbhis ARM2_DPI_RD_RN ARM2_S ARM2_HI ARM2_RSB l, ; immediate
+: rsblss ARM2_DPI_RD_RN ARM2_S ARM2_LS ARM2_RSB l, ; immediate
+: rsbges ARM2_DPI_RD_RN ARM2_S ARM2_GE ARM2_RSB l, ; immediate
+: rsblts ARM2_DPI_RD_RN ARM2_S ARM2_LT ARM2_RSB l, ; immediate
+: rsbgts ARM2_DPI_RD_RN ARM2_S ARM2_GT ARM2_RSB l, ; immediate
+: rsbles ARM2_DPI_RD_RN ARM2_S ARM2_LE ARM2_RSB l, ; immediate
+: rsbs ARM2_DPI_RD_RN ARM2_S ARM2_AL ARM2_RSB l, ; immediate
 
-: rsceqs ARM2_DPI_RN ARM2_S ARM2_EQ ARM2_RSC l, ; immediate
-: rscnes ARM2_DPI_RN ARM2_S ARM2_NE ARM2_RSC l, ; immediate
-: rsccss ARM2_DPI_RN ARM2_S ARM2_CS ARM2_RSC l, ; immediate
-: rscccs ARM2_DPI_RN ARM2_S ARM2_CC ARM2_RSC l, ; immediate
-: rscmis ARM2_DPI_RN ARM2_S ARM2_MI ARM2_RSC l, ; immediate
-: rscpls ARM2_DPI_RN ARM2_S ARM2_PL ARM2_RSC l, ; immediate
-: rscvss ARM2_DPI_RN ARM2_S ARM2_VS ARM2_RSC l, ; immediate
-: rscvcs ARM2_DPI_RN ARM2_S ARM2_VC ARM2_RSC l, ; immediate
-: rschis ARM2_DPI_RN ARM2_S ARM2_HI ARM2_RSC l, ; immediate
-: rsclss ARM2_DPI_RN ARM2_S ARM2_LS ARM2_RSC l, ; immediate
-: rscges ARM2_DPI_RN ARM2_S ARM2_GE ARM2_RSC l, ; immediate
-: rsclts ARM2_DPI_RN ARM2_S ARM2_LT ARM2_RSC l, ; immediate
-: rscgts ARM2_DPI_RN ARM2_S ARM2_GT ARM2_RSC l, ; immediate
-: rscles ARM2_DPI_RN ARM2_S ARM2_LE ARM2_RSC l, ; immediate
-: rscs ARM2_DPI_RN ARM2_S ARM2_AL ARM2_RSC l, ; immediate
+: rsceqs ARM2_DPI_RD_RN ARM2_S ARM2_EQ ARM2_RSC l, ; immediate
+: rscnes ARM2_DPI_RD_RN ARM2_S ARM2_NE ARM2_RSC l, ; immediate
+: rsccss ARM2_DPI_RD_RN ARM2_S ARM2_CS ARM2_RSC l, ; immediate
+: rscccs ARM2_DPI_RD_RN ARM2_S ARM2_CC ARM2_RSC l, ; immediate
+: rscmis ARM2_DPI_RD_RN ARM2_S ARM2_MI ARM2_RSC l, ; immediate
+: rscpls ARM2_DPI_RD_RN ARM2_S ARM2_PL ARM2_RSC l, ; immediate
+: rscvss ARM2_DPI_RD_RN ARM2_S ARM2_VS ARM2_RSC l, ; immediate
+: rscvcs ARM2_DPI_RD_RN ARM2_S ARM2_VC ARM2_RSC l, ; immediate
+: rschis ARM2_DPI_RD_RN ARM2_S ARM2_HI ARM2_RSC l, ; immediate
+: rsclss ARM2_DPI_RD_RN ARM2_S ARM2_LS ARM2_RSC l, ; immediate
+: rscges ARM2_DPI_RD_RN ARM2_S ARM2_GE ARM2_RSC l, ; immediate
+: rsclts ARM2_DPI_RD_RN ARM2_S ARM2_LT ARM2_RSC l, ; immediate
+: rscgts ARM2_DPI_RD_RN ARM2_S ARM2_GT ARM2_RSC l, ; immediate
+: rscles ARM2_DPI_RD_RN ARM2_S ARM2_LE ARM2_RSC l, ; immediate
+: rscs ARM2_DPI_RD_RN ARM2_S ARM2_AL ARM2_RSC l, ; immediate
 
-: sbceqs ARM2_DPI_RN ARM2_S ARM2_EQ ARM2_SBC l, ; immediate
-: sbcnes ARM2_DPI_RN ARM2_S ARM2_NE ARM2_SBC l, ; immediate
-: sbccss ARM2_DPI_RN ARM2_S ARM2_CS ARM2_SBC l, ; immediate
-: sbcccs ARM2_DPI_RN ARM2_S ARM2_CC ARM2_SBC l, ; immediate
-: sbcmis ARM2_DPI_RN ARM2_S ARM2_MI ARM2_SBC l, ; immediate
-: sbcpls ARM2_DPI_RN ARM2_S ARM2_PL ARM2_SBC l, ; immediate
-: sbcvss ARM2_DPI_RN ARM2_S ARM2_VS ARM2_SBC l, ; immediate
-: sbcvcs ARM2_DPI_RN ARM2_S ARM2_VC ARM2_SBC l, ; immediate
-: sbchis ARM2_DPI_RN ARM2_S ARM2_HI ARM2_SBC l, ; immediate
-: sbclss ARM2_DPI_RN ARM2_S ARM2_LS ARM2_SBC l, ; immediate
-: sbcges ARM2_DPI_RN ARM2_S ARM2_GE ARM2_SBC l, ; immediate
-: sbclts ARM2_DPI_RN ARM2_S ARM2_LT ARM2_SBC l, ; immediate
-: sbcgts ARM2_DPI_RN ARM2_S ARM2_GT ARM2_SBC l, ; immediate
-: sbcles ARM2_DPI_RN ARM2_S ARM2_LE ARM2_SBC l, ; immediate
-: sbcs ARM2_DPI_RN ARM2_S ARM2_AL ARM2_SBC l, ; immediate
+: sbceqs ARM2_DPI_RD_RN ARM2_S ARM2_EQ ARM2_SBC l, ; immediate
+: sbcnes ARM2_DPI_RD_RN ARM2_S ARM2_NE ARM2_SBC l, ; immediate
+: sbccss ARM2_DPI_RD_RN ARM2_S ARM2_CS ARM2_SBC l, ; immediate
+: sbcccs ARM2_DPI_RD_RN ARM2_S ARM2_CC ARM2_SBC l, ; immediate
+: sbcmis ARM2_DPI_RD_RN ARM2_S ARM2_MI ARM2_SBC l, ; immediate
+: sbcpls ARM2_DPI_RD_RN ARM2_S ARM2_PL ARM2_SBC l, ; immediate
+: sbcvss ARM2_DPI_RD_RN ARM2_S ARM2_VS ARM2_SBC l, ; immediate
+: sbcvcs ARM2_DPI_RD_RN ARM2_S ARM2_VC ARM2_SBC l, ; immediate
+: sbchis ARM2_DPI_RD_RN ARM2_S ARM2_HI ARM2_SBC l, ; immediate
+: sbclss ARM2_DPI_RD_RN ARM2_S ARM2_LS ARM2_SBC l, ; immediate
+: sbcges ARM2_DPI_RD_RN ARM2_S ARM2_GE ARM2_SBC l, ; immediate
+: sbclts ARM2_DPI_RD_RN ARM2_S ARM2_LT ARM2_SBC l, ; immediate
+: sbcgts ARM2_DPI_RD_RN ARM2_S ARM2_GT ARM2_SBC l, ; immediate
+: sbcles ARM2_DPI_RD_RN ARM2_S ARM2_LE ARM2_SBC l, ; immediate
+: sbcs ARM2_DPI_RD_RN ARM2_S ARM2_AL ARM2_SBC l, ; immediate
 
-: subeqs ARM2_DPI_RN ARM2_S ARM2_EQ ARM2_SUB l, ; immediate
-: subnes ARM2_DPI_RN ARM2_S ARM2_NE ARM2_SUB l, ; immediate
-: subcss ARM2_DPI_RN ARM2_S ARM2_CS ARM2_SUB l, ; immediate
-: subccs ARM2_DPI_RN ARM2_S ARM2_CC ARM2_SUB l, ; immediate
-: submis ARM2_DPI_RN ARM2_S ARM2_MI ARM2_SUB l, ; immediate
-: subpls ARM2_DPI_RN ARM2_S ARM2_PL ARM2_SUB l, ; immediate
-: subvss ARM2_DPI_RN ARM2_S ARM2_VS ARM2_SUB l, ; immediate
-: subvcs ARM2_DPI_RN ARM2_S ARM2_VC ARM2_SUB l, ; immediate
-: subhis ARM2_DPI_RN ARM2_S ARM2_HI ARM2_SUB l, ; immediate
-: sublss ARM2_DPI_RN ARM2_S ARM2_LS ARM2_SUB l, ; immediate
-: subges ARM2_DPI_RN ARM2_S ARM2_GE ARM2_SUB l, ; immediate
-: sublts ARM2_DPI_RN ARM2_S ARM2_LT ARM2_SUB l, ; immediate
-: subgts ARM2_DPI_RN ARM2_S ARM2_GT ARM2_SUB l, ; immediate
-: subles ARM2_DPI_RN ARM2_S ARM2_LE ARM2_SUB l, ; immediate
-: subs ARM2_DPI_RN ARM2_S ARM2_AL ARM2_SUB l, ; immediate
+: subeqs ARM2_DPI_RD_RN ARM2_S ARM2_EQ ARM2_SUB l, ; immediate
+: subnes ARM2_DPI_RD_RN ARM2_S ARM2_NE ARM2_SUB l, ; immediate
+: subcss ARM2_DPI_RD_RN ARM2_S ARM2_CS ARM2_SUB l, ; immediate
+: subccs ARM2_DPI_RD_RN ARM2_S ARM2_CC ARM2_SUB l, ; immediate
+: submis ARM2_DPI_RD_RN ARM2_S ARM2_MI ARM2_SUB l, ; immediate
+: subpls ARM2_DPI_RD_RN ARM2_S ARM2_PL ARM2_SUB l, ; immediate
+: subvss ARM2_DPI_RD_RN ARM2_S ARM2_VS ARM2_SUB l, ; immediate
+: subvcs ARM2_DPI_RD_RN ARM2_S ARM2_VC ARM2_SUB l, ; immediate
+: subhis ARM2_DPI_RD_RN ARM2_S ARM2_HI ARM2_SUB l, ; immediate
+: sublss ARM2_DPI_RD_RN ARM2_S ARM2_LS ARM2_SUB l, ; immediate
+: subges ARM2_DPI_RD_RN ARM2_S ARM2_GE ARM2_SUB l, ; immediate
+: sublts ARM2_DPI_RD_RN ARM2_S ARM2_LT ARM2_SUB l, ; immediate
+: subgts ARM2_DPI_RD_RN ARM2_S ARM2_GT ARM2_SUB l, ; immediate
+: subles ARM2_DPI_RD_RN ARM2_S ARM2_LE ARM2_SUB l, ; immediate
+: subs ARM2_DPI_RD_RN ARM2_S ARM2_AL ARM2_SUB l, ; immediate
 
 : nop $e320f000 l, ; immediate
 
