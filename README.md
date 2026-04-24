@@ -106,6 +106,8 @@ Use case was to pre compile the ARMv2 assembler code and embed it as binary into
 
 `armflite` on this branch has a `dictgen` directory containing a program which load / evaluate a Forth source (the ARMv2 assembler) then dump the dictionary as `dict,ffd`, this dictionary is then included with incbin directive in `armflite.s`, resulting `armflite` binary size is a bit higher due to ARM code + unoptimal generated code, could be (roughly) equivalent / better if `bl` was generated instead of a simple branch. (note : on later ARM `str pc...` can be used, generated code become quite good but not compatible with early ARM, see branch `forth.s`)
 
+`armflite` output a report log into `armflog` showing Forth stacks depth which can help to hint at code issues
+
 * `make dictgen` produce a `dictgen,ff8` RISC OS absolute program, this program load a Forth source called `armv2as` (which is `example/ARMv2_assembler.fs` in my case) when run under RISC OS, a `dict,ffd` file is produced by the program
 * `make armflite` produce the `armflite` program by bundling the `dict,ffd` binary (should be in project root folder)
 

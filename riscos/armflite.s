@@ -12,7 +12,7 @@
 _start:
     adr r8, forth_retn_stack_addr
 
-    @ = RISC OS calls to load / evaluate Forth source
+    @ = RISC OS call to load / evaluate Forth source
     @ OS_File -> load Forth source at base return stack addr.
     mov r0, #255
     adr r1, forth_filename
@@ -46,9 +46,54 @@ _start:
     @ evaluate the program loaded at base return stack addr.
     b forth
 
+    @ = RISC OS calls to get stacks depth as strings
+    adr r5, forth_retn_stack_addr
+    ldr r5, [r5]
+    sub r0, r5, r0
+    mov r0, r0, asr #2
+    adr r1, retrn_depth_addr
+    mov r2, #12
+    @ OS_BinaryToDecimal
+    swi #0x28
+    adr r0, forth_data_stack_addr
+    ldr r0, [r0]
+    sub r0, r0, sp
+    mov r0, r0, asr #2
+    adr r1, stack_depth_addr
+    mov r2, #12
+    @ OS_BinaryToDecimal
+    swi #0x28
+
+    @ = RISC OS call to output log file
+    mov r0, #10
+    adr r1, log_filename
+    adr r2, log_filetype
+    ldr r2, [r2]
+    adr r4, log_content_start
+    adr r5, log_content_end
+    @ OS_File
+    swi #0x8
+
     @ OS_Exit
     swi #0x11
 
+    @ = LOG FILE RELATED CONTENT
+    log_content_start:
+    .ascii "stack depth: "
+    stack_depth_addr:
+    .space 11, 0x20
+    .ascii "\nretrn depth: "
+    retrn_depth_addr:
+    .space 11, 0x20
+    log_content_end:
+    .align 2
+    log_filetype:
+        .word 0xfff
+    log_filename:
+        .asciz "@.armflog"
+        .align 2
+
+    @ = FORTH CTX. CONFIG.
     forth_data_stack_addr:
         .word (_end + FORTH_DICT_SIZE + FORTH_DATA_STACK_SIZE)
     forth_retn_stack_addr:
