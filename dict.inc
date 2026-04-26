@@ -11,11 +11,14 @@ forth_word "create"
     stmdb r0!, { r5 }           @ next call will continue after word creation
     b define_word               @ create dict. word
 store_create_content:
-    adr r10, lit_code           @ prepare to compile default word behavior (LIT)
-    add r12, r14, #20           @ will store addr. of word content (note : will be after RET)
-    ldmia r10, {r9-r11}         @ load generated code
-    stmia r14!, {r9-r12}        @ store generated code at current definition code addr.
+    adr r10, create_code        @ prepare to compile relocation friendly default word behavior
+    ldmia r10, {r9-r10}         @ load generated code
+    stmia r14!, {r9-r10}        @ store generated code at current definition code addr.
     b end_define_word
+
+create_code:
+    .word 0xe52d4004            @ push { r4 }
+    .word 0xe28f4000            @ add r4, pc, #0
 
 forth_word ":" FORTH_WORD_FLAG_IMMEDIATE
 define_word:
