@@ -32,12 +32,20 @@
 : ARM2_ENCODE_RS $8 lshift ;
 : ARM2_ENCODE_RD $c lshift ;
 : ARM2_ENCODE_RN $10 lshift ;
+variable SHIFT_FLAG $0 SHIFT_FLAG l!
+: ARM2_NO_SHIFT $0 SHIFT_FLAG l! ;
+variable IMMDT_FLAG $0 IMMDT_FLAG l!
+: ARM2_NO_IMMDT $0 IMMDT_FLAG l! ;
 : ARM2_ENCODE_RM_IMM
-    ARM2_IMMEDIATE over fand if
-        rot ARM2_ENCODE_IMMEDIATE
+    SHIFT_FLAG l@ if
+        ARM2_NO_SHIFT
+        or rot $7 lshift or
     else
-        or rot $7 lshift
-    then or ;
+        IMMDT_FLAG l@ if
+            ARM2_NO_IMMDT
+            rot ARM2_ENCODE_IMMEDIATE or
+        then
+    then ;
 : ARM2_DPI_RN
     ARM2_ENCODE_RN swap
     ARM2_ENCODE_RM_IMM or ;
@@ -59,10 +67,16 @@
         ARM2_UD or
     then ;
 : ARM2_OFF?_RM?
-    ARM2_IMMEDIATE over fand if
-        drop $fdffffff fand swap ARM2_?UD
-    else
+    SHIFT_FLAG l@ if
+        ARM2_NO_SHIFT
         ARM2_?UD or or swap $7 lshift
+    else
+        IMMDT_FLAG l@ if
+            ARM2_NO_IMMDT
+            drop $fdffffff fand swap ARM2_?UD
+        else
+            ARM2_?UD
+        then
     then or ;
 : ARM2_SDT
     ARM2_ENCODE_RD swap ARM2_ENCODE_RN or
@@ -158,16 +172,18 @@
 : @LABEL l@ here - ; immediate
 \ -------------------------- INSTRUCTIONS
 \ --------------------------------- UTILS
-: imm ARM2_IMMEDIATE ; immediate
-: lsl $00 ; immediate
-: lsr $20 ; immediate
-: asr $40 ; immediate
-: ror $60 ; immediate
-: rrx $60 ; immediate
-: lslr $01 ; immediate
-: lsrr $30 ; immediate
-: aslr $50 ; immediate
-: rorr $70 ; immediate
+: ARM2_HAS_IMMDT $1 negate IMMDT_FLAG l! ;
+: imm ARM2_HAS_IMMDT ARM2_IMMEDIATE ; immediate
+: ARM2_HAS_SHIFT $1 negate SHIFT_FLAG l! ;
+: lsl ARM2_HAS_SHIFT $00 ; immediate
+: lsr ARM2_HAS_SHIFT $20 ; immediate
+: asr ARM2_HAS_SHIFT $40 ; immediate
+: ror ARM2_HAS_SHIFT $60 ; immediate
+: rrx ARM2_HAS_SHIFT $60 ; immediate
+: lslr ARM2_HAS_SHIFT $10 ; immediate
+: lsrr ARM2_HAS_SHIFT $30 ; immediate
+: aslr ARM2_HAS_SHIFT $50 ; immediate
+: rorr ARM2_HAS_SHIFT $70 ; immediate
 : r0 $0 ; immediate : r1 $1 ; immediate
 : r2 $2 ; immediate : r3 $3 ; immediate
 : r4 $4 ; immediate : r5 $5 ; immediate
