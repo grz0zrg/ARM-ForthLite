@@ -27,6 +27,8 @@ And the [write-up of the Gforth assembler](https://www.onirom.fr/wiki/blog/20-12
 
 Also see my derivated compile only and performances focused [heretic Forth](https://github.com/grz0zrg/GnosTh).
 
+Note : mainly use `dictreloc` branch (more featured), `main` branch is kept minimal
+
 ## Shortcuts
 
 This implementation makes shortcuts to reduce code size that i consider ok because the REPL (or other methods) can handle it such as :
@@ -97,6 +99,8 @@ Build with `make armflite`, see `Makefile` and `riscos` directory.
 This version skip spaces for convenience.
 
 I use this as a custom BBC BASIC replacement / testbed for early ARM target.
+
+Note : `dictreloc` branch has `adr` pseudo instruction support (require some more words in the dict.) and word name changes for labels
 
 ## relocatable dictionary experiment (branch)
 
