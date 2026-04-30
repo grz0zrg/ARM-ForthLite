@@ -89,6 +89,10 @@ forth_word "rot"
     mov r4, r6
     ret
 
+forth_word "pick"
+    ldr r4, [sp, r4, lsl #2]
+    ret
+
 @ ================== FLOW CONTROL
 forth_word "if" FORTH_WORD_FLAG_IMMEDIATE
     adr r10, if_branch_code
@@ -144,11 +148,13 @@ forth_word "loop" FORTH_WORD_FLAG_IMMEDIATE
     adr r10, loop_code
     ldmia r10, {r6-r9}          @ load generated code
     stmia r14!, {r6-r9}         @ store generated code at current definition code addr.
+    mov r9, #0x1a000000         @ bne opcode
+gen_loop_code:
     sub r12, r4, r14            @ compute offset
     sub r12, r12, #8            @ adjust
     mov r12, r12, asr #2        @ word adjust
     bic r12, r12, #0xff000000   @ mask
-    orr r12, r12, #0x1a000000   @ bne opcode
+    orr r12, r12, r9            @ branch opcode
     str r12, [r14], #4          @ store opcode
     pop { r4 }
     ret
@@ -157,6 +163,15 @@ forth_word "loop" FORTH_WORD_FLAG_IMMEDIATE
     .word 0xe2855001            @ opcode: add r5, r5, #1 @ increment loop index
     .word 0xe1550006            @ opcode: cmp r6, r5 @ compare with loop limit
     .word 0x19200060            @ opcode: stmnedb r0!, { r5, r6 } @ put loop params back
+
+forth_word "begin" FORTH_WORD_FLAG_IMMEDIATE
+    push { r4 }
+    mov r4, r14
+    ret
+
+forth_word "again" FORTH_WORD_FLAG_IMMEDIATE
+    mov r9, #0xea000000         @ b opcode
+    b gen_loop_code
 
 forth_word "unloop"
     ldmia r0!, { r5, r6, r7 }   @ trash loop params from return stack

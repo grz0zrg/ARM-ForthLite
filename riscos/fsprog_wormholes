@@ -7,6 +7,9 @@
 : OS_ReadEscapeState $2c ; immediate
 : OS_Exit $11 ; immediate
 
+variable screen_adr_inp
+variable screen_adr_out
+variable buffer
 variable l1
 variable l2
 
@@ -15,27 +18,27 @@ create WORMHOLES_ARMv2_CODE
   OS_WriteI $15 + swi \ mode 21
 
   \ get screen adr in r14
-  $e4 imm r15 r0 add
-  $ec imm r15 r1 add
+  screen_adr_inp r0 adr
+  screen_adr_out r1 adr
   OS_ReadVduVariables swi
   [] $0 imm r1 r14 ldr
 
   OS_RemoveCursors swi
 
-  $dc imm r15 r13 add \ buffer
+  buffer r13 adr \ buffer
 
   \ screen clear
   $0 imm r5 mov
   $40000 imm r0 mov
-  l1 !LABEL
+  l1 ->
    [] r0 r13 r5 str
    $4 imm r0 r0 subs
-   l1 @LABEL bne
+   l1 <- bne
 
   \ texgen
   $170 imm r4 mov
   $800000 imm r3 mov
-  l1 !LABEL
+  l1 ->
   $2 asr r5 r4 r4 add
   $1 lsr r4 r5 r5 sub
   $2 asr r5 r4 r4 add
@@ -52,10 +55,10 @@ create WORMHOLES_ARMv2_CODE
   [] $17 lsr r4 r6 r7 strb
 
   $1 imm r3 r3 subs
-  l1 @LABEL bne
+  l1 <- bne
 
   $1000 imm r4 mov
-  l1 !LABEL
+  l1 ->
    $13 imm r0 mov
    OS_Byte swi \ vsync
 
@@ -75,7 +78,7 @@ create WORMHOLES_ARMv2_CODE
    $1ec imm r0 r12 add \ 511
    \ draw loop
    $50000 imm r1 mov
-   l2 !LABEL
+   l2 ->
      $c lsr r5 r12 r10 and
      $c lsr r6 r12 r11 and
      $9 lsl r11 r10 r10 add
@@ -96,14 +99,17 @@ create WORMHOLES_ARMv2_CODE
      r8 r6 mvnmi
 
      $1 imm r1 r1 subs
-     l2 @LABEL bpl
+     l2 <- bpl
 
    OS_ReadEscapeState swi
    OS_Exit swics
-  l1 @LABEL b
+  l1 <- b
 
-  $94 l,
-  $1 negate l,
-  $0 l, \ pad (useless)
+  screen_adr_inp -->
+    $94 l,
+    $1 negate l,
+    $0 l, \ pad (useless)
+  screen_adr_out -->
+  buffer -->
 
 WORMHOLES_ARMv2_CODE here $ff8 dump

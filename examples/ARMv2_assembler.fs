@@ -2,10 +2,13 @@
 \ ----------------------- ARMv2 ASSEMBLER
 \ ---------------------------------------
 \ --------------------------------- UTILS
-: variable
-    create $4 allot ;
+\ gForth note: 'variable','bl','and' will
+\ be redefined by this code,common gforth
+\ code may not work anymore after this !
 : l,
     here l! $4 allot ;
+: variable
+    create $0 l, ;
 : fand
     invert swap invert or invert ;
 \ shorter but not Gforth compatible:
@@ -55,6 +58,14 @@ variable IMMDT_FLAG $0 IMMDT_FLAG l!
 : ARM2_DPI_RD_RN
     ARM2_ENCODE_RD swap ARM2_ENCODE_RN or
     swap ARM2_ENCODE_RM_IMM or ;
+: ARM2_ENCODE_ADR
+    swap dup 0< if \ sub opcode
+        negate ARM2_ENCODE_IMMEDIATE
+        swap $c lshift or $e24f0000
+    else \ add opcode
+        ARM2_ENCODE_IMMEDIATE
+        swap $c lshift or $e28f0000
+    then or ;
 \ ------------ SINGLE DATA TRANSFER UTILS
 \ no supervisor support (T, bit 21)
 : ARM2_UD $800000 ;
@@ -168,8 +179,26 @@ variable IMMDT_FLAG $0 IMMDT_FLAG l!
     ARM2_ENCODE_RD rot ARM2_ENCODE_RS or
     or $200090 or ;
 \ ---------------------------- USER UTILS
-: !LABEL here swap l! ; immediate 
-: @LABEL l@ here - ; immediate
+: LABEL_DEF_BIT $80000000 ;
+: -> here swap l! ; immediate
+: <- l@ here - ; immediate
+: --> here over l@
+    begin
+        dup 0= if \ check if last adr. to resolve is hit
+            drop
+            LABEL_DEF_BIT or swap l! \ set label defined bit
+            exit
+        then
+        dup l@ \ get adr placeholder (bits 27-24: reg, bits 23-0 linked adr)
+        dup $ffffff fand \ get linked adr
+        swap $18 rshift $f fand \ get reg
+        $3 pick $3 pick $8 + - \ compute offset
+        ARM2_ENCODE_IMMEDIATE \ encode offset
+        swap $c lshift or \ encode reg.
+        $e28f0000 or \ encode add opcode
+        $2 pick l! \ store add opcode
+        swap drop \ cleanup + prepare linked adr addr. on TOS
+    again ; immediate
 \ -------------------------- INSTRUCTIONS
 \ --------------------------------- UTILS
 : ARM2_HAS_IMMDT $1 negate IMMDT_FLAG l! ;
@@ -195,6 +224,17 @@ variable IMMDT_FLAG $0 IMMDT_FLAG l!
 : sp $d ; immediate
 : lr $e ; immediate
 : pc $f ; immediate
+\ -------------------------------- PSEUDO
+: adr
+    over l@ LABEL_DEF_BIT fand 0= if \ undefined: forward ref. extend chain
+        over l@ LABEL_DEF_BIT invert fand \ get prev (bits 23-0 previous adr addr.) TODO -> can't we just consider it being 0 there ?
+        swap $18 lshift or l, \ build adr placeholder prev|(bits 27-24: reg) then emit
+        here $4 - swap l! \ store placeholder addr. into var.
+    else \ defined: backward ref. emit adr
+        swap l@ LABEL_DEF_BIT invert fand \ get target
+        here $8 + - swap \ compute offset
+        ARM2_ENCODE_ADR l, \ emit adr
+    then ; immediate
 \ -------------------------------- BRANCH
 : beq ARM2_ENCODE_BO ARM2_EQ ARM2_B l, ; immediate
 : bne ARM2_ENCODE_BO ARM2_NE ARM2_B l, ; immediate

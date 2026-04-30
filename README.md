@@ -96,6 +96,8 @@ This version skip spaces for convenience.
 
 I use this as a custom BBC BASIC replacement / testbed for early ARM target.
 
+Note : The ARMv2 assembler of this branch support `adr` pseudo instruction in combination with labels (see samples) however these features are only supported by a 32 bits Forth, they will break in 64 bits gForth unless the assembler code is adapted (+ some words added to the dict. e.g. `!` `@` `,`), it will break due to the use of 32 bits variables (64 bits addr. will be stored in variables on 64 bits Forth so gonna break...) + `l!` and `l@` in `adr`, `-->` etc. (also `LABEL_DEF_BIT` should be 64 bits on 64 bits Forth)
+
 ## relocatable dictionary experiment (branch)
 
 Branch `dictreloc` has code tailored for a relocatable dictionary, also has slightly more efficient (space / speed wise) generated code. (use a generated branch instruction)
