@@ -203,6 +203,16 @@ forth_word "l!"
     pop { r4 }
     ret
 
+forth_word "c@"
+    ldrb r4, [r4]
+    ret
+
+forth_word "c!"
+    pop { r5 }
+    strb r5, [r4]
+    pop { r4 }
+    ret
+
 @ ========================= LOGIC
 forth_word "invert"
     mvn r4, r4

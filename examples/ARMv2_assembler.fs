@@ -7,6 +7,8 @@
 \ code may not work anymore after this !
 : l,
     here l! $4 allot ;
+: c,
+    here c! $1 allot ;
 : variable
     create $0 l, ;
 : fand
