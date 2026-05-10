@@ -84,7 +84,8 @@ _start:
     .space 11, 0x20
     .ascii "\nretrn depth: "
     retrn_depth_addr:
-    .space 11, 0x20
+    .space 10, 0x20
+    .ascii "\n"
     log_content_end:
     .align 2
     log_filetype:

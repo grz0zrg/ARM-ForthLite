@@ -2,3 +2,5 @@ dir <Obey$Dir>
 | increase on "No writable memory" error
 WimpSlot -min 3288k -max 3288k
 run armflite
+Count out { >> armflog }
+TaskWindow -display -quit "Type armflog" 
