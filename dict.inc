@@ -242,7 +242,7 @@ forth_word "0<"
 
 forth_word "u<"
     pop { r5 }
-    cmp r4, r5
+    cmp r5, r4
     movlo r4, #-1
     movhs r4, #0
     ret

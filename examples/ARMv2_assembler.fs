@@ -63,10 +63,10 @@ variable IMMDT_FLAG $0 IMMDT_FLAG l!
 : ARM2_ENCODE_ADR
     swap dup 0< if \ sub opcode
         negate ARM2_ENCODE_IMMEDIATE
-        swap $c lshift or $e24f0000
+        swap $c lshift or $024f0000
     else \ add opcode
         ARM2_ENCODE_IMMEDIATE
-        swap $c lshift or $e28f0000
+        swap $c lshift or $028f0000
     then or ;
 \ ------------ SINGLE DATA TRANSFER UTILS
 \ no supervisor support (T, bit 21)
@@ -191,15 +191,14 @@ variable IMMDT_FLAG $0 IMMDT_FLAG l!
             LABEL_DEF_BIT or swap l! \ set label defined bit
             exit
         then
-        dup l@ \ get adr placeholder (bits 27-24: reg, bits 23-0 linked adr)
-        dup $ffffff fand \ get linked adr
+        dup l@                  \ get adr placeholder (bits 27-24: reg, bits 23-0 linked adr)
+        dup $ffffff fand        \ get linked adr
+        swap dup $f0000000 fand
         swap $18 rshift $f fand \ get reg
-        $3 pick $3 pick $8 + - \ compute offset
-        ARM2_ENCODE_IMMEDIATE \ encode offset
-        swap $c lshift or \ encode reg.
-        $e28f0000 or \ encode add opcode
-        $2 pick l! \ store add opcode
-        swap drop \ cleanup + prepare linked adr addr. on TOS
+        $4 pick $4 pick $8 + -  \ compute offset
+        swap ARM2_ENCODE_ADR or \ encode offset
+        $2 pick l!              \ patch placeholder
+        swap drop               \ cleanup + prepare linked adr addr. on TOS
     again ; immediate
 \ -------------------------- INSTRUCTIONS
 \ --------------------------------- UTILS
@@ -227,16 +226,29 @@ variable IMMDT_FLAG $0 IMMDT_FLAG l!
 : lr $e ; immediate
 : pc $f ; immediate
 \ -------------------------------- PSEUDO
-: adr
-    over l@ LABEL_DEF_BIT fand 0= if \ undefined: forward ref. extend chain
-        over l@ LABEL_DEF_BIT invert fand \ get prev (bits 23-0 previous adr addr.) TODO -> can't we just consider it being 0 there ?
-        swap $18 lshift or l, \ build adr placeholder prev|(bits 27-24: reg) then emit
-        here $4 - swap l! \ store placeholder addr. into var.
-    else \ defined: backward ref. emit adr
+: ARM2_ADR
+    over l@ LABEL_DEF_BIT fand 0= if      \ undefined: forward ref. extend chain
+        $18 lshift over l@ or             \ placeholder: reg | previous chain head
+        here rot l!
+    else \ defined: backward ref.
         swap l@ LABEL_DEF_BIT invert fand \ get target
-        here $8 + - swap \ compute offset
-        ARM2_ENCODE_ADR l, \ emit adr
-    then ; immediate
+        here $8 + - swap ARM2_ENCODE_ADR
+    then ;
+: adreq ARM2_ADR ARM2_EQ l, ; immediate
+: adrne ARM2_ADR ARM2_NE l, ; immediate
+: adrcs ARM2_ADR ARM2_CS l, ; immediate
+: adrcc ARM2_ADR ARM2_CC l, ; immediate
+: adrmi ARM2_ADR ARM2_MI l, ; immediate
+: adrpl ARM2_ADR ARM2_PL l, ; immediate
+: adrvs ARM2_ADR ARM2_VS l, ; immediate
+: adrvc ARM2_ADR ARM2_VC l, ; immediate
+: adrhi ARM2_ADR ARM2_HI l, ; immediate
+: adrls ARM2_ADR ARM2_LS l, ; immediate
+: adrge ARM2_ADR ARM2_GE l, ; immediate
+: adrlt ARM2_ADR ARM2_LT l, ; immediate
+: adrgt ARM2_ADR ARM2_GT l, ; immediate
+: adrle ARM2_ADR ARM2_LE l, ; immediate
+: adr   ARM2_ADR ARM2_AL l, ; immediate
 \ -------------------------------- BRANCH
 : beq ARM2_ENCODE_BO ARM2_EQ ARM2_B l, ; immediate
 : bne ARM2_ENCODE_BO ARM2_NE ARM2_B l, ; immediate
